@@ -8,13 +8,17 @@ int const SCREEN_HEIGHT = 1000;
 
 int main () 
 {
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Atestat");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Manu Tetris");
     SetTargetFPS(60);
+    SetWindowIcon(LoadImage("res/icon.png"));
+
+    InitLayout();
 
     while (!WindowShouldClose())
     {
         BeginDrawing();
-        DrawLayout();
+        
+        UpdateGame();
 
         EndDrawing();
     }
