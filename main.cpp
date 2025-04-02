@@ -15,17 +15,17 @@ int main ()
     SetTargetFPS(60);
     SetWindowIcon(LoadImage("res/icon.png"));
 
-    // InitLayout();
-
+    InitLayout();
+    
     while (!WindowShouldClose())
     {
         BeginDrawing();
         
-        InitLayout();
-
-        // UpdateGame();
-
+        UpdateGame();
+        
         EndDrawing();
+
+        WaitTime(0.1f);
     }
 
     CloseWindow();

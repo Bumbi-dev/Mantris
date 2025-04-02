@@ -8,6 +8,7 @@ Color grid_triangles[GRID_SIZE][GRID_SIZE];
 bool active_piece[PIECE_SIZE/2][PIECE_SIZE];
 int active_piece_x = 0;
 int active_piece_y = 0;
+Color active_piece_color;
 
 bool game_over = false;
 
@@ -66,11 +67,12 @@ void DrawGrid()
 void SpawnPiece(const Piece &piece) 
 {
     piece.GetPiece(active_piece);
+    active_piece_color = piece.GetColor();
 
     for(int i = 0; i < PIECE_SIZE/2; i++) 
         for(int j = 0; j < PIECE_SIZE; j++)
             if(active_piece[i][j]) {
-                grid_triangles[i][j + (GRID_SIZE - PIECE_SIZE)/2] = piece.GetColor();
+                grid_triangles[i][j + (GRID_SIZE - PIECE_SIZE)/2] = active_piece_color;
 
                 if(!AreColorsEqual(grid_triangles[i][j + (GRID_SIZE - PIECE_SIZE)/2], GRID_TRIANGLE))
                     game_over = true;
@@ -90,11 +92,29 @@ void InitLayout()
     DrawGrid();
 }
 
+void MovePiece() 
+{ 
+    for(int i = 0; i < PIECE_SIZE/2; i++) 
+        for(int j = 0; j < PIECE_SIZE; j++) {
+            if(!active_piece[i][j])
+                continue;
+            if(i + active_piece_y + 2 > GRID_SIZE)
+                return;
+
+            grid_triangles[i + active_piece_y][j + (GRID_SIZE - PIECE_SIZE)/2] = GRID_TRIANGLE;
+        }
+    
+    active_piece_y++;
+
+    for(int i = 0; i < PIECE_SIZE/2; i++)
+        for(int j = 0; j < PIECE_SIZE; j++)
+            if(active_piece[i][j])
+                grid_triangles[i + active_piece_y][j + (GRID_SIZE - PIECE_SIZE)/2] = active_piece_color;
+}
+
 void UpdateGame()
 {
-    // DrawGrid();
-
-    // Square();
-
-    // SpawnPiece(5, 5, Square());
+    MovePiece();
+    DrawGrid();
 }
+
