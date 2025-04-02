@@ -1,9 +1,13 @@
 #include <raylib.h>
+#include "Piece.h"
+#include "Utils.h"
 
-class Piece {
-public:
-    bool active_squares[4][8][8];
-    Color color;
+Piece::Piece() {}
 
-    virtual ~Piece() = default;
-};
+Piece::~Piece() {}
+
+void Piece::ClearPiece(Color (&triangles)[8][8]) const {
+    for(int i = 0; i < 8; i++)
+        for(int j = 0; j < 8; j++)
+            triangles[i][j] = GRID_TRIANGLE;
+}

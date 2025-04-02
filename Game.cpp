@@ -1,19 +1,14 @@
-#include<vector>
-#include<raylib.h>
-#include<Utils.cpp>
-#include<Piece.cpp>
-
-#include<iostream>
+#include <vector>
+#include <raylib.h>
+#include <iostream>
+#include "Utils.h"
+#include "Square.h"
 using namespace std;
-Color triangle_colors[16][16];
 
-void PrintColor(const Color& color) {
-    std::cout << "(" 
-              << (int)color.r << ", " 
-              << (int)color.g << ", " 
-              << (int)color.b << ", " 
-              << (int)color.a << ")";
-}
+Color triangle_colors[16][16];
+Color active_piece[8][8];
+int active_piece_x = 0;
+int active_piece_y = 0;
 
 void DrawLeftTriangle(float x, float y, Color color)
 {
@@ -54,6 +49,18 @@ void DrawGrid()
             DrawGridTriangle(i, j);
 }
 
+void SpawnPiece(int i, int j, Piece &piece) {
+    cout << piece.GetColor().r << endl;
+
+    for(int i = 0; i < 8; i++) 
+        for(int j = 0; j < 8; j++)
+            triangle_colors[i][j] = active_piece[i][j];
+
+    triangle_colors[i][j] = piece.GetColor();
+
+    delete &piece;
+}
+
 void InitLayout()
 {
     ClearBackground(BACKGROUND);
@@ -63,14 +70,22 @@ void InitLayout()
             triangle_colors[i][j] = GRID_TRIANGLE;
 
     DrawGrid();
-}
 
-void SpawnPiece(int i, int j, Piece piece) {
-    cout << "spawn";
+    Square square = Square();
+
+    cout << square.GetColor().r << endl;
+    cout << square.GetColor().a << endl;
+    cout << square.GetColor().b << endl;
+    cout << square.GetColor().g << endl;
+
+    // SpawnPiece(5, 5, square);
 }
 
 void UpdateGame()
 {
     // DrawGrid();
-    SpawnPiece(5, 5, Piece());
+
+    // Square();
+
+    // SpawnPiece(5, 5, Square());
 }

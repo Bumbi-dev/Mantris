@@ -1,5 +1,5 @@
-#ifndef GAMEINTERFACE_H
-#define GAMEINTERFACE_H
+#ifndef GAME_H
+#define GAME_H
 
 void InitLayout();
 
