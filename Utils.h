@@ -1,17 +1,22 @@
 #pragma once
 #include <raylib.h>
 
-extern const int GRID_X;
-extern const int GRID_Y;
-extern const int GRID_WIDTH;
-extern const int GRID_HEIGHT;
-extern const int TRIANGLE_SIDE;
-extern const int TRIANGLE_PADDING;
-extern const int BACKGROUND_WIDTH;
-extern const int BACKGROUND_HEIGHT;
+constexpr int GRID_SIZE = 18;
+constexpr int GRID_X = 10;
+constexpr int GRID_Y = 10;
+constexpr int TRIANGLE_SIDE = 50;
+constexpr int TRIANGLE_PADDING = 1;
 
-//Colors
-extern const Color BACKGROUND;
-extern const Color GRID_BACKGROUND; 
-extern const Color GRID_TRIANGLE;
-extern const Color ACTIVE_PIECE;
+constexpr int BACKGROUND_WIDTH = TRIANGLE_PADDING + (2 * TRIANGLE_PADDING + TRIANGLE_SIDE) * GRID_SIZE / 2;
+constexpr int BACKGROUND_HEIGHT = TRIANGLE_PADDING + (2 * TRIANGLE_PADDING + TRIANGLE_SIDE) * GRID_SIZE;
+
+// Colors
+constexpr Color BACKGROUND = {48, 25, 52, 255};
+constexpr Color GRID_BACKGROUND = {34, 49, 59, 255};
+constexpr Color GRID_TRIANGLE = {23, 23, 23, 255};
+constexpr Color ACTIVE_PIECE = {44, 123, 72, 255};
+constexpr Color SQUARE_COLOR = {240, 220, 5, 255};
+
+
+constexpr int PIECE_SIZE = 10;
+

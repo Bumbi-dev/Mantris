@@ -15,15 +15,15 @@ int main ()
     SetTargetFPS(60);
     SetWindowIcon(LoadImage("res/icon.png"));
 
-    Square square = Square();
-
-    InitLayout();
+    // InitLayout();
 
     while (!WindowShouldClose())
     {
         BeginDrawing();
         
-        UpdateGame();
+        InitLayout();
+
+        // UpdateGame();
 
         EndDrawing();
     }

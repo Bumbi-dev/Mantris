@@ -1,14 +1,28 @@
 #include <vector>
-#include <raylib.h>
 #include <iostream>
 #include "Utils.h"
 #include "Square.h"
 using namespace std;
 
-Color triangle_colors[16][16];
-Color active_piece[8][8];
+Color grid_triangles[GRID_SIZE][GRID_SIZE];
+bool active_piece[PIECE_SIZE/2][PIECE_SIZE];
 int active_piece_x = 0;
 int active_piece_y = 0;
+
+bool game_over = false;
+
+bool AreColorsEqual(Color color1, Color color2) {
+    if(color1.r != color2.r)
+        return false;
+    if(color1.g != color2.g)
+        return false;
+    if(color1.b != color2.b)
+        return false;
+    if(color1.a != color2.a)
+        return false;
+
+    return true;
+}
 
 void DrawLeftTriangle(float x, float y, Color color)
 {
@@ -32,11 +46,11 @@ void DrawGridTriangle(int i, int j)
 {
     int x = GRID_X + TRIANGLE_PADDING + j * (2 * TRIANGLE_PADDING + TRIANGLE_SIDE);
     int y = GRID_Y + 2 * TRIANGLE_PADDING + i * (2 * TRIANGLE_PADDING + TRIANGLE_SIDE);
-    DrawLeftTriangle(x, y, triangle_colors[i][j*2]);    
+    DrawLeftTriangle(x, y, grid_triangles[i][j*2]);    
     
     x += TRIANGLE_PADDING;
     y -= TRIANGLE_PADDING;
-    DrawRightTriangle(x, y, triangle_colors[i][j*2 + 1]);
+    DrawRightTriangle(x, y, grid_triangles[i][j*2 + 1]);
 }
 
 void DrawGrid() 
@@ -44,41 +58,36 @@ void DrawGrid()
     //GRID BACKGROUND
     DrawRectangle(GRID_X, GRID_Y, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, GRID_BACKGROUND);
 
-    for(int i = 0; i < 16; i++)
-        for(int j = 0; j < 8; j++) 
+    for(int i = 0; i < GRID_SIZE; i++)
+        for(int j = 0; j < GRID_SIZE / 2; j++) 
             DrawGridTriangle(i, j);
 }
 
-void SpawnPiece(int i, int j, Piece &piece) {
-    cout << piece.GetColor().r << endl;
+void SpawnPiece(const Piece &piece) 
+{
+    piece.GetPiece(active_piece);
 
-    for(int i = 0; i < 8; i++) 
-        for(int j = 0; j < 8; j++)
-            triangle_colors[i][j] = active_piece[i][j];
+    for(int i = 0; i < PIECE_SIZE/2; i++) 
+        for(int j = 0; j < PIECE_SIZE; j++)
+            if(active_piece[i][j]) {
+                grid_triangles[i][j + (GRID_SIZE - PIECE_SIZE)/2] = piece.GetColor();
 
-    triangle_colors[i][j] = piece.GetColor();
-
-    delete &piece;
+                if(!AreColorsEqual(grid_triangles[i][j + (GRID_SIZE - PIECE_SIZE)/2], GRID_TRIANGLE))
+                    game_over = true;
+            }
 }
 
 void InitLayout()
 {
     ClearBackground(BACKGROUND);
 
-    for(int i = 0; i < 16; i++)
-        for(int j = 0; j < 32; j++)
-            triangle_colors[i][j] = GRID_TRIANGLE;
+    for(int i = 0; i < GRID_SIZE; i++)
+        for(int j = 0; j < GRID_SIZE; j++)
+            grid_triangles[i][j] = GRID_TRIANGLE;
+
+    SpawnPiece(Square());
 
     DrawGrid();
-
-    Square square = Square();
-
-    cout << square.GetColor().r << endl;
-    cout << square.GetColor().a << endl;
-    cout << square.GetColor().b << endl;
-    cout << square.GetColor().g << endl;
-
-    // SpawnPiece(5, 5, square);
 }
 
 void UpdateGame()

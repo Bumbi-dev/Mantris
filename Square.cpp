@@ -1,20 +1,17 @@
-#include <raylib.h>
 #include "Square.h"
-#include "Utils.h"
-#include <iostream>
 
-using namespace std;
-
-Square::Square() {
-    color = ACTIVE_PIECE;
+Square::Square() : Piece() {
+    color = SQUARE_COLOR;
 }
 
-Color Square::GetColor() {
+Color Square::GetColor() const 
+{
     return color;
 }
 
-void Square::GetPiece(Color (&triangles)[8][8]) {
+void Square::GetPiece(bool (&triangles)[PIECE_SIZE/2][PIECE_SIZE]) const 
+{
     ClearPiece(triangles);
-    triangles[3][0] = color;
-    triangles[4][0] = color;
+    triangles[0][4] = true;
+    triangles[0][5] = true;
 }
