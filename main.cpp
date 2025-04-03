@@ -1,7 +1,6 @@
 #include <iostream>
 #include <raylib.h>
 #include "Game.h" 
-#include "Square.h"
 #include "Utils.h"
 
 using namespace std;
@@ -24,8 +23,6 @@ int main ()
         UpdateGame();
         
         EndDrawing();
-
-        WaitTime(0.1f);
     }
 
     CloseWindow();
