@@ -4,6 +4,7 @@
 #include "Square_Piece.h"
 #include "Line_Piece.h"
 #include "T_Piece.h"
+#include "S_Piece.h"
 using namespace std;
 
 Color grid_triangles[GRID_SIZE][GRID_SIZE];
@@ -93,16 +94,19 @@ void SpawnPiece(const Piece &piece)
 
 void SpawnRandomPiece()
 {
-    int random_piece = GetRandomValue(0, 2);
+    int random_piece = GetRandomValue(0, 3);
     switch(random_piece) {
         case 0:
-            SpawnPiece(Square_Piece());
+            SpawnPiece(S_Piece());
             break;
         case 1:
-            SpawnPiece(Line_Piece());
+            SpawnPiece(T_Piece());
             break;
         case 2:
-            SpawnPiece(T_Piece());
+            SpawnPiece(Line_Piece());
+            break;
+        case 3:
+            SpawnPiece(Square_Piece());
             break;
     }
 }
@@ -142,19 +146,34 @@ void InitLayout()
 void PieceFalls()
 { 
     //Checks for collision
-    for(int i = PIECE_SIZE/2; i >= 1; i--) 
-        for(int j = 0; j < PIECE_SIZE; j++) {
-            if(!active_piece[i-1][j-1])
+    for(int i = PIECE_SIZE/2 - 1; i >= 0; i--) 
+        for(int j = 0; j < PIECE_SIZE; j+=2) {
+            if(!(active_piece[i][j] || active_piece[i][j+1]) || (active_piece[i+1][j] || active_piece[i+1][j+1]))
                 continue;
-            
-            if((!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x - 1],
-                     GRID_TRIANGLE)
-                && !active_piece[i][j])
-                || i + active_piece_y + 1 > GRID_SIZE)
+
+            if(!AreColorsEqual(grid_triangles[i + active_piece_y + 1][j + active_piece_x + 1], GRID_TRIANGLE)
+                || i + active_piece_y + 1 >= GRID_SIZE)
             {
                 SpawnRandomPiece();
                 return;
             }
+
+            if(!AreColorsEqual(grid_triangles[i + active_piece_y + 1][j + active_piece_x], GRID_TRIANGLE)
+                && active_piece[i][j])
+            {
+                SpawnRandomPiece();
+                return;
+            }
+
+            if(!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x], GRID_TRIANGLE)
+                && active_piece[i][j+1] && !active_piece[i][j])
+            {
+                SpawnRandomPiece();
+                return;
+            }
+
+            // if(j % 2 == 0)
+            
         }
     
     DeletePiece();
@@ -187,5 +206,5 @@ void UpdateGame()
 
     DrawGrid();
 
-    WaitTime(0.5f);
+    WaitTime(0.1f);
 }

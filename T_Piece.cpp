@@ -12,5 +12,5 @@ Color T_Piece::GetColor() const
 void T_Piece::GetPiece(bool (&triangles)[PIECE_SIZE/2][PIECE_SIZE]) const 
 {
     ClearPiece(triangles);
-    triangles[0][3] = true;
+    triangles[0][5] = true;
 }
