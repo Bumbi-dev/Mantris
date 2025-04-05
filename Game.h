@@ -1,8 +1,3 @@
-#ifndef GAME_H
-#define GAME_H
+#pragma once
 
-void InitLayout();
-
-void UpdateGame();
-
-#endif
+void StartGame();

@@ -1,10 +1,10 @@
 #pragma once
 #include "Piece.h"
 
-class Square_Piece : public Piece 
+class O_Piece : public Piece 
 {
 public:
-    Square_Piece();
+    O_Piece();
     Color color;
     Color GetColor() const override;
     void GetPiece(bool (&triangles)[PIECE_SIZE/2][PIECE_SIZE]) const override;

@@ -1,210 +1,105 @@
-#include <vector>
 #include <iostream>
+#include <atomic>
+#include <thread>
 #include "Utils.h"
-#include "Square_Piece.h"
-#include "Line_Piece.h"
+#include "Game_Interface.h"
+#include "O_Piece.h"
+#include "I_Piece.h"
 #include "T_Piece.h"
 #include "S_Piece.h"
-using namespace std;
 
-Color grid_triangles[GRID_SIZE][GRID_SIZE];
-bool active_piece[PIECE_SIZE/2][PIECE_SIZE];
-int active_piece_x = 0;
-int active_piece_y = 0;
-Color active_piece_color;
+using namespace std;
 
 bool game_over = false;
 
-bool AreColorsEqual(Color color1, Color color2) {
-    if(color1.r != color2.r)
-        return false;
-    if(color1.g != color2.g)
-        return false;
-    if(color1.b != color2.b)
-        return false;
-    if(color1.a != color2.a)
-        return false;
-
-    return true;
-}
-
-void DrawLeftTriangle(float x, float y, Color color)
-{
-    Vector2 v1 = {x, y };
-    Vector2 v2 = {x, y + TRIANGLE_SIDE};
-    Vector2 v3 = {x + TRIANGLE_SIDE, y + TRIANGLE_SIDE};
-
-    DrawTriangle(v1, v2, v3, color);
-}
-
-void DrawRightTriangle(float x, float y, Color color)
-{
-    Vector2 v1 = {x, y };
-    Vector2 v2 = {x + TRIANGLE_SIDE, y + TRIANGLE_SIDE};
-    Vector2 v3 = {x + TRIANGLE_SIDE, y};
-
-    DrawTriangle(v1, v2, v3, color);
-}
-
-void DrawGridTriangle(int i, int j) 
-{
-    int x = GRID_X + TRIANGLE_PADDING + j * (2 * TRIANGLE_PADDING + TRIANGLE_SIDE);
-    int y = GRID_Y + 2 * TRIANGLE_PADDING + i * (2 * TRIANGLE_PADDING + TRIANGLE_SIDE);
-    DrawLeftTriangle(x, y, grid_triangles[i][j*2]);    
-    
-    x += TRIANGLE_PADDING;
-    y -= TRIANGLE_PADDING;
-    DrawRightTriangle(x, y, grid_triangles[i][j*2 + 1]);
-}
-
-void DrawGrid() 
-{
-    //GRID BACKGROUND
-    DrawRectangle(GRID_X, GRID_Y, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, GRID_BACKGROUND);
-
-    for(int i = 0; i < GRID_SIZE; i++)
-        for(int j = 0; j < GRID_SIZE / 2; j++) 
-            DrawGridTriangle(i, j);
-}
+thread t;
+atomic<bool> ready(false);
 
 void FinishGame()
 {
     game_over = true;
 }
 
-void SpawnPiece(const Piece &piece) 
-{
-    active_piece_x = (GRID_SIZE - PIECE_SIZE)/2;
-    active_piece_y = 0;
-    piece.GetPiece(active_piece);
-    active_piece_color = piece.GetColor();
-
-    //TODO make this a function
-    for(int i = 0; i < PIECE_SIZE/2; i++) 
-        for(int j = 0; j < PIECE_SIZE; j++) {
-            if(!active_piece[i][j])
-                continue;
-
-            if(!AreColorsEqual(grid_triangles[i][j + active_piece_x], GRID_TRIANGLE))
-                FinishGame();
-                
-            grid_triangles[i][j + active_piece_x] = active_piece_color;
-        }   
-}
-
 void SpawnRandomPiece()
 {
+    bool end_game = false;
     int random_piece = GetRandomValue(0, 3);
     switch(random_piece) {
         case 0:
-            SpawnPiece(S_Piece());
+            end_game = SpawnPiece(S_Piece());
             break;
         case 1:
-            SpawnPiece(T_Piece());
+            end_game = SpawnPiece(T_Piece());
             break;
         case 2:
-            SpawnPiece(Line_Piece());
+            end_game = SpawnPiece(I_Piece());
             break;
         case 3:
-            SpawnPiece(Square_Piece());
+            end_game = SpawnPiece(O_Piece());
             break;
     }
+    if(end_game)
+        FinishGame();
 }
 
-void DeletePiece()
+void UpdateFall() 
 {
-    for(int i = 0; i < PIECE_SIZE/2; i++) 
-        for(int j = 0; j < PIECE_SIZE; j++) {
-            if(!active_piece[i][j])
-                continue;
+    while(!ready)
+            this_thread::sleep_for(chrono::milliseconds(1));
 
-            grid_triangles[i + active_piece_y][j + active_piece_x] = GRID_TRIANGLE;
-        }
-}
-
-void DrawPiece()
-{
-    for(int i = 0; i < PIECE_SIZE/2; i++)
-        for(int j = 0; j < PIECE_SIZE; j++)
-            if(active_piece[i][j])
-                grid_triangles[i + active_piece_y][j + active_piece_x] = active_piece_color;
+    while(!game_over) {
+        this_thread::sleep_for(chrono::milliseconds(300));
+        
+        if(!PieceFalls())
+            SpawnRandomPiece();
+    }
 }
 
 void InitLayout()
 {
+    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Manu Tetris");
+    SetTargetFPS(60);
+    SetWindowIcon(LoadImage("res/icon.png"));
+
+    BeginDrawing();
+
     ClearBackground(BACKGROUND);
-
-    for(int i = 0; i < GRID_SIZE; i++)
-        for(int j = 0; j < GRID_SIZE; j++)
-            grid_triangles[i][j] = GRID_TRIANGLE;
-
+    ClearGrid();
     SpawnRandomPiece();
-
     DrawGrid();
-}
 
-void PieceFalls()
-{ 
-    //Checks for collision
-    for(int i = PIECE_SIZE/2 - 1; i >= 0; i--) 
-        for(int j = 0; j < PIECE_SIZE; j+=2) {
-            if(!(active_piece[i][j] || active_piece[i][j+1]) || (active_piece[i+1][j] || active_piece[i+1][j+1]))
-                continue;
+    EndDrawing();
 
-            if(!AreColorsEqual(grid_triangles[i + active_piece_y + 1][j + active_piece_x + 1], GRID_TRIANGLE)
-                || i + active_piece_y + 1 >= GRID_SIZE)
-            {
-                SpawnRandomPiece();
-                return;
-            }
-
-            if(!AreColorsEqual(grid_triangles[i + active_piece_y + 1][j + active_piece_x], GRID_TRIANGLE)
-                && active_piece[i][j])
-            {
-                SpawnRandomPiece();
-                return;
-            }
-
-            if(!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x], GRID_TRIANGLE)
-                && active_piece[i][j+1] && !active_piece[i][j])
-            {
-                SpawnRandomPiece();
-                return;
-            }
-
-            // if(j % 2 == 0)
-            
-        }
-    
-    DeletePiece();
-
-    active_piece_y++;
-
-    DrawPiece();
-}
-
-void MovePiece()
-{
-    DeletePiece();
-
-    if(IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A))
-        active_piece_x -= 2;
-    if(IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D))
-        active_piece_x += 2;
-
-    DrawPiece();
+    t = thread(UpdateFall);
 }
 
 void UpdateGame()
 {
-    if(game_over)
-        return;
+    BeginDrawing();
 
-    MovePiece();
-    
-    PieceFalls();
+    if(game_over) {
+        cout << "Game Over" << endl;
+        return;
+    }
+
+    if(IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A))
+        MovePiece(LEFT);
+    if(IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D))
+        MovePiece(RIGHT);
 
     DrawGrid();
 
-    WaitTime(0.1f);
+    EndDrawing();
+}
+
+void StartGame()
+{
+    InitLayout();
+    
+    ready = true;
+
+    while (!WindowShouldClose())
+        UpdateGame();
+
+    CloseWindow();
 }

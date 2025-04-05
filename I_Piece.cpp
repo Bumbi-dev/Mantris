@@ -1,15 +1,15 @@
-#include "Line_Piece.h"
+#include "I_Piece.h"
 
-Line_Piece::Line_Piece() : Piece() {
+I_Piece::I_Piece() : Piece() {
     color = LINE_COLOR;
 }
 
-Color Line_Piece::GetColor() const 
+Color I_Piece::GetColor() const 
 {
     return color;
 }
 
-void Line_Piece::GetPiece(bool (&triangles)[PIECE_SIZE/2][PIECE_SIZE]) const 
+void I_Piece::GetPiece(bool (&triangles)[PIECE_SIZE/2][PIECE_SIZE]) const 
 {
     ClearPiece(triangles);
     triangles[0][4] = true;
