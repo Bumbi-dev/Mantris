@@ -1,5 +1,8 @@
 #include "Game_Interface.h"
 #include "Utils.h"
+#include <iostream>
+
+using namespace std;
 
 Color grid_triangles[GRID_SIZE][GRID_SIZE];
 bool active_piece[PIECE_SIZE/2][PIECE_SIZE];
@@ -9,9 +12,13 @@ Color active_piece_color;
 int active_piece_x = 0;
 int active_piece_y = 0;
 
-Color GetTriangle(int i, int j)
+Color GetTriangle(int y, int x)
 {
-    return grid_triangles[i][j];
+    return grid_triangles[y][x];
+}
+Color GetActivePieceTriangle(int i, int j)
+{
+    return grid_triangles[i + active_piece_y][j + active_piece_x];
 }
 
 bool AreColorsEqual(Color color1, Color color2) {
@@ -81,6 +88,7 @@ bool SpawnPiece(const Piece &piece)
     piece.GetPiece(active_piece);
     active_piece_color = piece.GetColor();
 
+    bool end_game = false;
     //TODO make this a function
     for(int i = 0; i < PIECE_SIZE/2; i++) 
         for(int j = 0; j < PIECE_SIZE; j++) {
@@ -88,12 +96,14 @@ bool SpawnPiece(const Piece &piece)
                 continue;
 
             if(!AreColorsEqual(grid_triangles[i][j + active_piece_x], GRID_TRIANGLE))
-                return true;
+                end_game = true;
                 
             grid_triangles[i][j + active_piece_x] = active_piece_color;
         }   
 
-    return false;
+    if(end_game)
+        std::cout<<"spawned piece"<<std::endl;
+    return end_game;
 }
 
 void DeletePiece()
@@ -125,20 +135,11 @@ bool PieceFalls()
 
             if(!AreColorsEqual(grid_triangles[i + active_piece_y + 1][j + active_piece_x + 1], GRID_TRIANGLE)
                 || i + active_piece_y + 1 >= GRID_SIZE)
-            {
                 return false;
-            }
 
             if(!AreColorsEqual(grid_triangles[i + active_piece_y + 1][j + active_piece_x], GRID_TRIANGLE)
                 && active_piece[i][j])
-            {
                 return false;
-            }
-            if(!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x], GRID_TRIANGLE)
-                && active_piece[i][j+1] && !active_piece[i][j])
-            {
-                return false;
-            }
         }
     
     DeletePiece();
@@ -153,17 +154,53 @@ bool PieceFalls()
 void MovePiece(Direction direction)
 {
     DeletePiece();
+    int x_offset = 0;
+
 
     if(direction == LEFT)
-        active_piece_x -= 2;
-    if(direction == RIGHT)
-        active_piece_x += 2;;
+    {
+        x_offset = -2;
 
+        for(int j = 2; j < PIECE_SIZE && x_offset != 0; j+=2) 
+            for(int i = 0; i < PIECE_SIZE/2 && x_offset != 0; i++) 
+            {
+                if(!(active_piece[i][j] || active_piece[i][j+1]) || (active_piece[i][j-2] || active_piece[i][j-1])) 
+                    continue;
 
-    if(active_piece_x < 0)
-        active_piece_x = 0;
-    if(active_piece_x > GRID_SIZE - PIECE_SIZE)//TODO fix this
-        active_piece_x = GRID_SIZE - PIECE_SIZE;
+                //Checks for border, or blocking piece
+                if(!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x-1], GRID_TRIANGLE)
+                    || j + active_piece_x + x_offset < 0)
+                    x_offset = 0;
+
+                //Checks if the lower piece would collide
+                if(!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x-2], GRID_TRIANGLE)
+                    && active_piece[i][j])
+                    x_offset = 0;
+            }
+    }
+
+    if(direction == RIGHT) {
+        x_offset = 2;
+
+        for(int j = 2; j < PIECE_SIZE && x_offset != 0; j+=2) 
+            for(int i = 0; i < PIECE_SIZE/2 && x_offset != 0; i++) 
+            {
+                if(!(active_piece[i][j] || active_piece[i][j+1]) || (active_piece[i][j+2] || active_piece[i][j+3])) 
+                    continue;
+
+                //Checks for border, or blocking piece
+                if(!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x + 2], GRID_TRIANGLE)
+                    || j + active_piece_x + x_offset >= GRID_SIZE)
+                    x_offset = 0;
+
+                //Checks if the lower piece would collide
+                if(!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x + 3], GRID_TRIANGLE)
+                    && active_piece[i][j+1])
+                    x_offset = 0;
+            }
+    }
+
+    active_piece_x += x_offset;
 
     DrawPiece();
 }

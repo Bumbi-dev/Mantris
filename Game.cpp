@@ -12,6 +12,8 @@ using namespace std;
 
 bool game_over = false;
 
+int fall_delay = 100;
+
 thread t;
 atomic<bool> ready(false);
 
@@ -44,11 +46,8 @@ void SpawnRandomPiece()
 
 void UpdateFall() 
 {
-    while(!ready)
-            this_thread::sleep_for(chrono::milliseconds(1));
-
     while(!game_over) {
-        this_thread::sleep_for(chrono::milliseconds(300));
+        this_thread::sleep_for(chrono::milliseconds(fall_delay));
         
         if(!PieceFalls())
             SpawnRandomPiece();
@@ -71,6 +70,7 @@ void InitLayout()
     EndDrawing();
 
     t = thread(UpdateFall);
+
 }
 
 void UpdateGame()
@@ -78,7 +78,8 @@ void UpdateGame()
     BeginDrawing();
 
     if(game_over) {
-        cout << "Game Over" << endl;
+        DrawGrid();
+        EndDrawing();
         return;
     }
 
@@ -96,8 +97,6 @@ void StartGame()
 {
     InitLayout();
     
-    ready = true;
-
     while (!WindowShouldClose())
         UpdateGame();
 
