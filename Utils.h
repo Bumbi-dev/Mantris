@@ -1,5 +1,6 @@
 #pragma once
 #include <raylib.h>
+#include <iostream>
 
 constexpr int WINDOW_WIDTH = 800;
 constexpr int WINDOW_HEIGHT = 1000;
@@ -17,8 +18,11 @@ constexpr Color BACKGROUND = {48, 25, 52, 255};
 constexpr Color GRID_BACKGROUND = {34, 49, 59, 255};
 constexpr Color GRID_TRIANGLE = {23, 23, 23, 255};
 constexpr Color ACTIVE_PIECE = {44, 123, 72, 255};
-constexpr Color SQUARE_COLOR = {240, 220, 5, 255};
-constexpr Color LINE_COLOR = {240, 5, 5, 255};
+constexpr Color O_COLOR = {240, 220, 5, 255};
+constexpr Color I_COLOR = {240, 5, 5, 255};
 constexpr Color T_COLOR = {5, 240, 5, 255};
+constexpr Color S_COLOR = {5, 5, 240, 255};
+constexpr Color P_COLOR = {240, 5, 240, 255};
+constexpr Color V_COLOR = {240, 120, 5, 255};
 
 constexpr int PIECE_SIZE = 10;

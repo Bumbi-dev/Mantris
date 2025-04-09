@@ -16,8 +16,10 @@ void ClearGrid();
 
 void DrawGrid();
 
-bool SpawnPiece(const Piece &piece);
+bool SpawnPiece(Piece &piece);
 
 bool PieceFalls();
 
-void MovePiece(Direction direction);
+bool MovePiece(Direction direction);
+
+void RotatePiece();

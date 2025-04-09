@@ -1,16 +1,55 @@
 #include "T_Piece.h"
 
-T_Piece::T_Piece() : Piece() {
-    color = T_COLOR;
-}
-
 Color T_Piece::GetColor() const 
 {
-    return color;
+    return T_COLOR;
 }
 
-void T_Piece::GetPiece(bool (&triangles)[PIECE_SIZE/2][PIECE_SIZE]) const 
+void T_Piece::GetPiece(bool (&triangles)[PIECE_SIZE/2][PIECE_SIZE], int pos) const 
 {
     ClearPiece(triangles);
-    triangles[0][5] = true;
+    if(pos % 4 == 0)
+    {
+        triangles[0][4] = true;
+        triangles[0][5] = true;
+        triangles[1][2] = true;
+        triangles[1][3] = true;
+        triangles[1][4] = true;
+        triangles[1][5] = true;
+        triangles[1][6] = true;  
+        triangles[1][7] = true;
+    }
+    if(pos % 4 == 1)
+    {
+        triangles[0][4] = true;
+        triangles[0][5] = true;
+        triangles[1][4] = true;
+        triangles[1][5] = true;
+        triangles[1][6] = true;  
+        triangles[1][7] = true;
+        triangles[2][4] = true;
+        triangles[2][5] = true;
+    }
+    if(pos % 4 == 2)
+    {
+        triangles[1][2] = true;
+        triangles[1][3] = true;
+        triangles[1][4] = true;
+        triangles[1][5] = true;
+        triangles[1][6] = true;  
+        triangles[1][7] = true;
+        triangles[2][4] = true;
+        triangles[2][5] = true;
+    }
+    if(pos % 4 == 3)
+    {
+        triangles[0][4] = true;
+        triangles[0][5] = true;
+        triangles[1][2] = true;
+        triangles[1][3] = true;
+        triangles[1][4] = true;
+        triangles[1][5] = true;
+        triangles[2][4] = true;
+        triangles[2][5] = true;
+    }
 }

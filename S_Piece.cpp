@@ -1,16 +1,30 @@
 #include "S_Piece.h"
 
-S_Piece::S_Piece() : Piece() {
-    color = RED;
-}
-
 Color S_Piece::GetColor() const 
 {
-    return color;
+    return S_COLOR;
 }
 
-void S_Piece::GetPiece(bool (&triangles)[PIECE_SIZE/2][PIECE_SIZE]) const 
+void S_Piece::GetPiece(bool (&triangles)[PIECE_SIZE/2][PIECE_SIZE], int pos) const 
 {
     ClearPiece(triangles);
-    triangles[0][4] = true;
+
+    if(pos % 2 == 0)
+    {
+        triangles[0][4] = true;
+        triangles[0][5] = true;
+        triangles[0][6] = true;
+        triangles[1][5] = true;
+        triangles[1][6] = true;
+        triangles[1][7] = true;
+    }
+    else
+    {
+        triangles[0][2] = true;
+        triangles[0][3] = true;
+        triangles[0][6] = true;
+        triangles[1][3] = true;
+        triangles[1][6] = true;
+        triangles[1][7] = true;
+    }
 }

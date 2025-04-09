@@ -1,21 +1,27 @@
-#include <iostream>
 #include <atomic>
 #include <thread>
+#include <chrono>
 #include "Utils.h"
 #include "Game_Interface.h"
 #include "O_Piece.h"
 #include "I_Piece.h"
 #include "T_Piece.h"
 #include "S_Piece.h"
+#include "V_Piece.h"
+#include "P_Piece.h"
 
 using namespace std;
+using namespace chrono;
 
 bool game_over = false;
+int fall_delay = 300;
 
-int fall_delay = 100;
+steady_clock::time_point last_move;
 
 thread t;
 atomic<bool> ready(false);
+
+Piece* pieces[10] = {new I_Piece(), new O_Piece(), new V_Piece(), new S_Piece(), new T_Piece(), new P_Piece()};
 
 void FinishGame()
 {
@@ -24,30 +30,47 @@ void FinishGame()
 
 void SpawnRandomPiece()
 {
-    bool end_game = false;
-    int random_piece = GetRandomValue(0, 3);
-    switch(random_piece) {
-        case 0:
-            end_game = SpawnPiece(S_Piece());
-            break;
-        case 1:
-            end_game = SpawnPiece(T_Piece());
-            break;
-        case 2:
-            end_game = SpawnPiece(I_Piece());
-            break;
-        case 3:
-            end_game = SpawnPiece(O_Piece());
-            break;
-    }
+    int random_piece = GetRandomValue(4, 4);
+    cout << random_piece << endl;
+    bool end_game = SpawnPiece(*pieces[random_piece]);
+
     if(end_game)
         FinishGame();
+}
+
+void UpdateMove()
+{
+    if(IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S))
+        fall_delay /= 2;
+    if(IsKeyReleased(KEY_DOWN) || IsKeyReleased(KEY_S))
+        fall_delay *= 2;
+
+    if(IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W))
+        RotatePiece();
+
+    int time_since_last_move = duration_cast<milliseconds>(steady_clock::now() - last_move).count();
+
+    if(time_since_last_move < 100)
+        return;
+
+    if(IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
+        if(MovePiece(LEFT))
+            last_move = steady_clock::now();
+
+    if(IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D))
+        if(MovePiece(RIGHT))
+            last_move = steady_clock::now();
 }
 
 void UpdateFall() 
 {
     while(!game_over) {
+
+        while(IsKeyDown(KEY_SPACE))
+            this_thread::sleep_for(chrono::milliseconds(1));
+
         this_thread::sleep_for(chrono::milliseconds(fall_delay));
+        
         
         if(!PieceFalls())
             SpawnRandomPiece();
@@ -69,8 +92,9 @@ void InitLayout()
 
     EndDrawing();
 
-    t = thread(UpdateFall);
+    last_move = steady_clock::now();
 
+    t = thread(UpdateFall);
 }
 
 void UpdateGame()
@@ -83,11 +107,8 @@ void UpdateGame()
         return;
     }
 
-    if(IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A))
-        MovePiece(LEFT);
-    if(IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D))
-        MovePiece(RIGHT);
-
+    UpdateMove();
+    
     DrawGrid();
 
     EndDrawing();

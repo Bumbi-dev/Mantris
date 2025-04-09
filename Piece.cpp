@@ -1,9 +1,6 @@
 #include <raylib.h>
 #include "Piece.h"
 
-Piece::Piece() {}
-
-Piece::~Piece() {}
 
 void Piece::ClearPiece(bool (&triangles)[PIECE_SIZE/2][PIECE_SIZE]) const 
 {
