@@ -41,7 +41,7 @@ void ClearGrid()
             grid_triangles[i][j] = GRID_TRIANGLE;
 }
 
-//TODO add a border slight darker border colored to the triangles
+//TODO add a border slightly darker than the triangle 
 void DrawLeftTriangle(float x, float y, Color color)
 {
     Vector2 v1 = {x, y };
@@ -132,6 +132,7 @@ bool PieceFalls()
             if(!(active_piece[i][j] || active_piece[i][j+1]) || (active_piece[i+1][j] || active_piece[i+1][j+1]))
                 continue;
 
+            //TODO maybe remove this to make game easier
             //Check if it reached bottom or is blocked
             if(!AreColorsEqual(grid_triangles[i + active_piece_y + 1][j + active_piece_x + 1], GRID_TRIANGLE)
                 || i + active_piece_y + 1 >= GRID_SIZE)
@@ -165,6 +166,7 @@ bool MovePiece(Direction direction)
     {
         x_offset = -2;
 
+        //TODO maybe make conditions less strict so that you can insert easier
         for(int j = 2; j < PIECE_SIZE && x_offset != 0; j+=2) 
             for(int i = 0; i < PIECE_SIZE/2 && x_offset != 0; i++) 
             {
@@ -231,21 +233,26 @@ void RotatePiece()
     DeletePiece();//TODO draw after checking 
     piece->GetPiece(active_piece, active_piece_rotation);
 
-    //TODO check if its after grid also
     for(int i = PIECE_SIZE/2 - 1; i >= 0; i--) 
-        for(int j = 0; j < PIECE_SIZE; j+=2) 
+        for(int j = 0; j < PIECE_SIZE; j++) 
         {
             if(!active_piece[i][j])
                 continue;
 
-
-            if(!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x], GRID_TRIANGLE)) 
+            cout << "Checking rotation" << endl;
+            //Reverts rotation
+            if(!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x], GRID_TRIANGLE)
+                || j + active_piece_x >= GRID_SIZE || j + active_piece_x < 0) 
             {
+                cout << "Reverting rotation" << endl;
                 active_piece_rotation--;
                 if(active_piece_rotation < 0)
                     active_piece_rotation = 3;
 
                 piece->GetPiece(active_piece, active_piece_rotation);
+
+                DrawPiece();
+                return;
             }  
         }
     DrawPiece();

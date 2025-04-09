@@ -3,12 +3,13 @@
 #include <chrono>
 #include "Utils.h"
 #include "Game_Interface.h"
-#include "O_Piece.h"
 #include "I_Piece.h"
-#include "T_Piece.h"
-#include "S_Piece.h"
-#include "V_Piece.h"
+#include "L_Piece.h"
+#include "O_Piece.h"
 #include "P_Piece.h"
+#include "T_Piece.h"
+#include "V_Piece.h"
+#include "N_Piece.h"
 
 using namespace std;
 using namespace chrono;
@@ -21,7 +22,7 @@ steady_clock::time_point last_move;
 thread t;
 atomic<bool> ready(false);
 
-Piece* pieces[10] = {new I_Piece(), new O_Piece(), new V_Piece(), new S_Piece(), new T_Piece(), new P_Piece()};
+Piece* pieces[10] = {new I_Piece(), new O_Piece(), new V_Piece(), new P_Piece(), new T_Piece(), new L_Piece(), new N_Piece()};
 
 void FinishGame()
 {
@@ -30,8 +31,8 @@ void FinishGame()
 
 void SpawnRandomPiece()
 {
-    int random_piece = GetRandomValue(4, 4);
-    cout << random_piece << endl;
+    int random_piece = GetRandomValue(0, 6);
+    
     bool end_game = SpawnPiece(*pieces[random_piece]);
 
     if(end_game)
@@ -40,9 +41,10 @@ void SpawnRandomPiece()
 
 void UpdateMove()
 {
-    if(IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S))
+    //TODO maybe fix when adding key_s to the condition it may happen with both key_down and key_s at the same time
+    if(IsKeyPressed(KEY_DOWN))
         fall_delay /= 2;
-    if(IsKeyReleased(KEY_DOWN) || IsKeyReleased(KEY_S))
+    if(IsKeyReleased(KEY_DOWN))
         fall_delay *= 2;
 
     if(IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W))
@@ -77,6 +79,23 @@ void UpdateFall()
     }
 }
 
+void UpdateGame()
+{
+    BeginDrawing();
+
+    if(game_over) {
+        DrawGrid();
+        EndDrawing();
+        return;
+    }
+
+    UpdateMove();
+    
+    DrawGrid();
+
+    EndDrawing();
+}
+
 void InitLayout()
 {
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Manu Tetris");
@@ -95,23 +114,6 @@ void InitLayout()
     last_move = steady_clock::now();
 
     t = thread(UpdateFall);
-}
-
-void UpdateGame()
-{
-    BeginDrawing();
-
-    if(game_over) {
-        DrawGrid();
-        EndDrawing();
-        return;
-    }
-
-    UpdateMove();
-    
-    DrawGrid();
-
-    EndDrawing();
 }
 
 void StartGame()

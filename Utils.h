@@ -1,4 +1,5 @@
 #pragma once
+
 #include <raylib.h>
 #include <iostream>
 
@@ -21,8 +22,9 @@ constexpr Color ACTIVE_PIECE = {44, 123, 72, 255};
 constexpr Color O_COLOR = {240, 220, 5, 255};
 constexpr Color I_COLOR = {240, 5, 5, 255};
 constexpr Color T_COLOR = {5, 240, 5, 255};
-constexpr Color S_COLOR = {5, 5, 240, 255};
 constexpr Color P_COLOR = {240, 5, 240, 255};
 constexpr Color V_COLOR = {240, 120, 5, 255};
+constexpr Color L_COLOR = {5, 240, 240, 255};
+constexpr Color N_COLOR = {240, 5, 120, 255};
 
 constexpr int PIECE_SIZE = 10;
