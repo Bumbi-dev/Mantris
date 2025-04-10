@@ -1,5 +1,6 @@
 #include "P_Piece.h"
 
+//3D RECTANGLE PIECE
 Color P_Piece::GetColor() const 
 {
     return P_COLOR;

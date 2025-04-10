@@ -12,26 +12,35 @@ int active_piece_x;
 int active_piece_y;
 int active_piece_rotation;
 
+int score;
+
 Color GetTriangle(int y, int x)
 {
     return grid_triangles[y][x];
 }
-Color GetActivePieceTriangle(int i, int j)
+Color GetActivePieceTriangle(int i, int j)//TODO implement this where needed
 {
     return grid_triangles[i + active_piece_y][j + active_piece_x];
 }
 
-bool AreColorsEqual(Color color1, Color color2) {
-    if(color1.r != color2.r)
-        return false;
-    if(color1.g != color2.g)
-        return false;
-    if(color1.b != color2.b)
-        return false;
-    if(color1.a != color2.a)
-        return false;
+void UpdateScore(int s)
+{
+    score = s;
 
-    return true;
+    int text_width = MeasureText("SCORE", 30);
+    DrawText("SCORE", SCORE_BOX_X + SCORE_BOX_WIDTH / 2 - text_width / 2, SCORE_BOX_Y + 40, 30, WHITE);
+
+    text_width = MeasureText(TextFormat("%d", score), 40);
+    DrawText(TextFormat("%d", score), SCORE_BOX_X + SCORE_BOX_WIDTH / 2 - text_width / 2, SCORE_BOX_Y + 120, 30, WHITE);
+}
+
+void DrawScoreBox()
+{
+    DrawRectangleRounded(
+        (Rectangle){SCORE_BOX_X, SCORE_BOX_Y, SCORE_BOX_WIDTH, SCORE_BOX_HEIGHT},
+        0.3f, 8, SCORE_BOX_BACKGROUND);
+
+    UpdateScore(0);
 }
 
 void ClearGrid()
@@ -41,12 +50,25 @@ void ClearGrid()
             grid_triangles[i][j] = GRID_TRIANGLE;
 }
 
-//TODO add a border slightly darker than the triangle 
 void DrawLeftTriangle(float x, float y, Color color)
 {
-    Vector2 v1 = {x, y };
+    Vector2 v1 = {x, y};
     Vector2 v2 = {x, y + TRIANGLE_SIDE};
     Vector2 v3 = {x + TRIANGLE_SIDE, y + TRIANGLE_SIDE};
+
+    if(AreColorsEqual(color, GRID_TRIANGLE))
+    {
+        color = DARKER_GRID_TRIANGLE;
+        DrawTriangle(v1, v2, v3, color);
+        return;
+    }
+
+    Color border_color = GetDarkerColor(color);
+    DrawTriangle(v1, v2, v3, border_color);
+
+    v1 = {x + 3, y + 8};
+    v2 = {x + 3, y + TRIANGLE_SIDE - 3};       
+    v3 = {x + TRIANGLE_SIDE - 8, y + TRIANGLE_SIDE - 3};
 
     DrawTriangle(v1, v2, v3, color);
 }
@@ -56,6 +78,14 @@ void DrawRightTriangle(float x, float y, Color color)
     Vector2 v1 = {x, y };
     Vector2 v2 = {x + TRIANGLE_SIDE, y + TRIANGLE_SIDE};
     Vector2 v3 = {x + TRIANGLE_SIDE, y};
+
+    Color border_color = GetDarkerColor(color);
+
+    DrawTriangle(v1, v2, v3, border_color);
+
+    v1 = {x + 8 , y + 3};
+    v2 = {x + TRIANGLE_SIDE - 3, y + TRIANGLE_SIDE - 8};
+    v3 = {x + TRIANGLE_SIDE - 3, y + 3};
 
     DrawTriangle(v1, v2, v3, color);
 }
@@ -166,6 +196,10 @@ bool MovePiece(Direction direction)
     {
         x_offset = -2;
 
+        for(int i = 0; i < PIECE_SIZE; i++)
+            if(active_piece[i][0] && active_piece_x + x_offset < 0)  
+                return false;
+
         //TODO maybe make conditions less strict so that you can insert easier
         for(int j = 2; j < PIECE_SIZE && x_offset != 0; j+=2) 
             for(int i = 0; i < PIECE_SIZE/2 && x_offset != 0; i++) 
@@ -239,12 +273,11 @@ void RotatePiece()
             if(!active_piece[i][j])
                 continue;
 
-            cout << "Checking rotation" << endl;
+            //TODO if the piece is L try moving it to the left or right
             //Reverts rotation
             if(!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x], GRID_TRIANGLE)
                 || j + active_piece_x >= GRID_SIZE || j + active_piece_x < 0) 
             {
-                cout << "Reverting rotation" << endl;
                 active_piece_rotation--;
                 if(active_piece_rotation < 0)
                     active_piece_rotation = 3;

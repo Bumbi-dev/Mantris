@@ -106,8 +106,11 @@ void InitLayout()
 
     ClearBackground(BACKGROUND);
     ClearGrid();
+
     SpawnRandomPiece();
     DrawGrid();
+
+    DrawScoreBox();
 
     EndDrawing();
 

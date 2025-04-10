@@ -1,5 +1,6 @@
 #include "O_Piece.h"
 
+//SQUARE PIECE
 Color O_Piece::GetColor() const 
 {
     return O_COLOR;

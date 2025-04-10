@@ -1,5 +1,6 @@
 #include "T_Piece.h"
 
+//T PIECE
 Color T_Piece::GetColor() const 
 {
     return T_COLOR;

@@ -1,5 +1,6 @@
 #include "V_Piece.h"
 
+//SMALL PIECE
 Color V_Piece::GetColor() const 
 {
     return V_COLOR;

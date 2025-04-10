@@ -1,5 +1,6 @@
 #include "N_Piece.h"
 
+//NUKE PIECE
 Color N_Piece::GetColor() const 
 {
     return N_COLOR;

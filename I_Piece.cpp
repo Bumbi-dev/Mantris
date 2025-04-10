@@ -1,5 +1,6 @@
 #include "I_Piece.h"
 
+//LINE PIECE
 Color I_Piece::GetColor() const 
 {
     return I_COLOR;

@@ -8,9 +8,9 @@ enum Direction {
     DOWN
 };
 
-Color GetTriangle(int i, int j);
+void UpdateScore(int s);
 
-bool AreColorsEqual(Color color1, Color color2);
+void DrawScoreBox();
 
 void ClearGrid();
 
