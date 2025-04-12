@@ -1,5 +1,6 @@
 #include "Game_Interface.h"
 #include "Utils.h"
+#include "Colors.h"
 
 using namespace std;
 
@@ -120,7 +121,7 @@ bool SpawnPiece(Piece &p)
     piece->GetPiece(active_piece, 0);
 
     bool end_game = false;
-    //TODO make this a function
+
     for(int i = 0; i < PIECE_SIZE/2; i++) 
         for(int j = 0; j < PIECE_SIZE; j++) {
             if(!active_piece[i][j])
@@ -164,17 +165,17 @@ bool PieceFalls()
 
             //TODO maybe remove this to make game easier
             //Check if it reached bottom or is blocked
-            if(!AreColorsEqual(grid_triangles[i + active_piece_y + 1][j + active_piece_x + 1], GRID_TRIANGLE)
+            if(!AreColorsEqual(GetActivePieceTriangle(i + 1, j+1), GRID_TRIANGLE)
                 || i + active_piece_y + 1 >= GRID_SIZE)
                 return false;
 
             //Check the compatible piece is blocked
-            if(!AreColorsEqual(grid_triangles[i + active_piece_y + 1][j + active_piece_x], GRID_TRIANGLE)
+            if(!AreColorsEqual(GetActivePieceTriangle(i + 1, j), GRID_TRIANGLE)
                 && active_piece[i][j])
                 return false;
 
             //Check if it shares the same square with another piece
-            if(!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x], GRID_TRIANGLE)
+            if(!AreColorsEqual(GetActivePieceTriangle(i, j), GRID_TRIANGLE)
                 && active_piece[i][j+1] && !active_piece[i][j])
                 return false;
         }
@@ -208,17 +209,17 @@ bool MovePiece(Direction direction)
                     continue;
 
                 //Checks for border, or blocking piece
-                if(!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x-1], GRID_TRIANGLE)
+                if(!AreColorsEqual(GetActivePieceTriangle(i, j-1), GRID_TRIANGLE)
                     || j + active_piece_x + x_offset < 0)
                     return false;
 
                 //Checks if the lower piece would collide
-                if(!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x-2], GRID_TRIANGLE)
+                if(!AreColorsEqual(GetActivePieceTriangle(i, j-2), GRID_TRIANGLE)
                     && active_piece[i][j])
                     return false;
 
                 //Check if it shares the same square with another piece
-                if(!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x], GRID_TRIANGLE)
+                if(!AreColorsEqual(GetActivePieceTriangle(i, j), GRID_TRIANGLE)
                     && active_piece[i][j+1] && !active_piece[i][j])
                     return false;
             }
@@ -234,17 +235,17 @@ bool MovePiece(Direction direction)
                     continue;
 
                 //Checks for border, or blocking piece
-                if(!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x + 2], GRID_TRIANGLE)
+                if(!AreColorsEqual(GetActivePieceTriangle(i, j+2), GRID_TRIANGLE)
                     || j + active_piece_x + x_offset >= GRID_SIZE)
                     return false;
 
                 //Checks if the lower piece would collide
-                if(!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x + 3], GRID_TRIANGLE)
+                if(!AreColorsEqual(GetActivePieceTriangle(i, j+3), GRID_TRIANGLE)
                     && active_piece[i][j+1])
                     return false;
 
                 //Check if it shares the same square with another piece
-                if(!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x + 1], GRID_TRIANGLE)
+                if(!AreColorsEqual(GetActivePieceTriangle(i, j+1), GRID_TRIANGLE)
                     && active_piece[i][j] && !active_piece[i][j+1])
                     return false;
             }
@@ -264,7 +265,7 @@ void RotatePiece()
     active_piece_rotation++;
     active_piece_rotation %= 4;
 
-    DeletePiece();//TODO draw after checking 
+    DeletePiece();
     piece->GetPiece(active_piece, active_piece_rotation);
 
     for(int i = PIECE_SIZE/2 - 1; i >= 0; i--) 
@@ -273,9 +274,8 @@ void RotatePiece()
             if(!active_piece[i][j])
                 continue;
 
-            //TODO if the piece is L try moving it to the left or right
             //Reverts rotation
-            if(!AreColorsEqual(grid_triangles[i + active_piece_y][j + active_piece_x], GRID_TRIANGLE)
+            if(!AreColorsEqual(GetActivePieceTriangle(i, j), GRID_TRIANGLE)
                 || j + active_piece_x >= GRID_SIZE || j + active_piece_x < 0) 
             {
                 active_piece_rotation--;
@@ -288,5 +288,40 @@ void RotatePiece()
                 return;
             }  
         }
+
     DrawPiece();
+}
+
+void DeleteTopLine(int i) {
+    for(int j = 0; j < GRID_SIZE; j+=2)
+        grid_triangles[i][j+1] = GRID_TRIANGLE;
+}
+
+void DeleteBottomLine(int i) {
+    for(int j = 0; j < GRID_SIZE; j+=2)
+        grid_triangles[i][j] = GRID_TRIANGLE;
+}
+
+
+void DeleteCompletedLines() {
+    bool top_complete;
+    bool bottom_complete;
+    for(int i = GRID_SIZE - 1; i >= 0; i--)  {
+        top_complete = true;
+        bottom_complete = true;
+        for(int j = 0; j < GRID_SIZE; j+=2) {
+
+            if(AreColorsEqual(grid_triangles[i][j], GRID_TRIANGLE))
+                bottom_complete = false;
+            if(AreColorsEqual(grid_triangles[i][j+1], GRID_TRIANGLE))
+                top_complete = false;
+        }
+
+        if(top_complete)
+            DeleteTopLine(i);
+        if(bottom_complete)
+            DeleteBottomLine(i);
+    }
+    //If just the top triangles of a line or bottom triangles are completed delete just them
+    //If both then delete the line and move everything down
 }

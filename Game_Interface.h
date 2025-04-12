@@ -23,3 +23,5 @@ bool PieceFalls();
 bool MovePiece(Direction direction);
 
 void RotatePiece();
+
+void DeleteCompletedLines();

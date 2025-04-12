@@ -5,6 +5,7 @@ Color L_Piece::GetColor() const
     return L_COLOR;
 }
 
+//TODO change this
 void L_Piece::GetPiece(bool (&triangles)[PIECE_SIZE/2][PIECE_SIZE], int pos) const 
 {
     ClearPiece(triangles);

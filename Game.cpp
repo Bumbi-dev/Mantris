@@ -16,6 +16,7 @@ using namespace chrono;
 
 bool game_over = false;
 int fall_delay = 300;
+int is_key_down = false;
 
 steady_clock::time_point last_move;
 
@@ -41,15 +42,24 @@ void SpawnRandomPiece()
 
 void UpdateMove()
 {
-    //TODO maybe fix when adding key_s to the condition it may happen with both key_down and key_s at the same time
-    if(IsKeyPressed(KEY_DOWN))
-        fall_delay /= 2;
-    if(IsKeyReleased(KEY_DOWN))
-        fall_delay *= 2;
+    //SPEED UP FALLING
+    if (!is_key_down) {
+        if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) {
+            is_key_down = true;
+            fall_delay /= 2;
+        }
+    } else {
+        if (IsKeyReleased(KEY_DOWN) || IsKeyReleased(KEY_S)) {
+            is_key_down = false;
+            fall_delay *= 2;
+        }
+    }
 
+    //ROTATE PIECE
     if(IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W))
         RotatePiece();
 
+    //MOVE PIECE
     int time_since_last_move = duration_cast<milliseconds>(steady_clock::now() - last_move).count();
 
     if(time_since_last_move < 100)
@@ -68,14 +78,16 @@ void UpdateFall()
 {
     while(!game_over) {
 
-        while(IsKeyDown(KEY_SPACE))
+        while(IsKeyDown(KEY_SPACE))//TODO: remove this
             this_thread::sleep_for(chrono::milliseconds(1));
 
         this_thread::sleep_for(chrono::milliseconds(fall_delay));
         
         
-        if(!PieceFalls())
+        if(!PieceFalls()) {
+            DeleteCompletedLines();
             SpawnRandomPiece();
+        }
     }
 }
 
