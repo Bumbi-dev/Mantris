@@ -1,6 +1,7 @@
 #include "Game_Interface.h"
 #include "Utils.h"
 #include "Colors.h"
+#include <atomic>
 
 using namespace std;
 
@@ -13,7 +14,7 @@ int active_piece_x;
 int active_piece_y;
 int active_piece_rotation;
 
-int score;
+int score = 0;
 
 Color GetTriangle(int y, int x)
 {
@@ -22,26 +23,6 @@ Color GetTriangle(int y, int x)
 Color GetActivePieceTriangle(int i, int j)//TODO implement this where needed
 {
     return grid_triangles[i + active_piece_y][j + active_piece_x];
-}
-
-void UpdateScore(int s)
-{
-    score = s;
-
-    int text_width = MeasureText("SCORE", 30);
-    DrawText("SCORE", SCORE_BOX_X + SCORE_BOX_WIDTH / 2 - text_width / 2, SCORE_BOX_Y + 40, 30, WHITE);
-
-    text_width = MeasureText(TextFormat("%d", score), 40);
-    DrawText(TextFormat("%d", score), SCORE_BOX_X + SCORE_BOX_WIDTH / 2 - text_width / 2, SCORE_BOX_Y + 120, 30, WHITE);
-}
-
-void DrawScoreBox()
-{
-    DrawRectangleRounded(
-        (Rectangle){SCORE_BOX_X, SCORE_BOX_Y, SCORE_BOX_WIDTH, SCORE_BOX_HEIGHT},
-        0.3f, 8, SCORE_BOX_BACKGROUND);
-
-    UpdateScore(0);
 }
 
 void ClearGrid()
@@ -153,6 +134,21 @@ void DrawPiece()
         for(int j = 0; j < PIECE_SIZE; j++)
             if(active_piece[i][j])
                 grid_triangles[i + active_piece_y][j + active_piece_x] = piece->GetColor();
+}
+
+void UpdateScore(int s)
+{    
+    score += s;
+
+    DrawRectangleRounded(
+        (Rectangle){SCORE_BOX_X, SCORE_BOX_Y, SCORE_BOX_WIDTH, SCORE_BOX_HEIGHT},
+        0.3f, 8, SCORE_BOX_BACKGROUND);
+
+    int text_width = MeasureText("SCORE", 30);
+    DrawText("SCORE", SCORE_BOX_X + SCORE_BOX_WIDTH / 2 - text_width / 2, SCORE_BOX_Y + 40, 30, WHITE);
+
+    text_width = MeasureText(TextFormat("%d", score), 40);
+    DrawText(TextFormat("%d", score), SCORE_BOX_X + SCORE_BOX_WIDTH / 2 - text_width / 2, SCORE_BOX_Y + 120, 30, WHITE);
 }
 
 bool PieceFalls()
@@ -302,15 +298,14 @@ void DeleteBottomLine(int i) {
         grid_triangles[i][j] = GRID_TRIANGLE;
 }
 
-
 void DeleteCompletedLines() {
     bool top_complete;
     bool bottom_complete;
+
     for(int i = GRID_SIZE - 1; i >= 0; i--)  {
         top_complete = true;
         bottom_complete = true;
         for(int j = 0; j < GRID_SIZE; j+=2) {
-
             if(AreColorsEqual(grid_triangles[i][j], GRID_TRIANGLE))
                 bottom_complete = false;
             if(AreColorsEqual(grid_triangles[i][j+1], GRID_TRIANGLE))
@@ -321,7 +316,19 @@ void DeleteCompletedLines() {
             DeleteTopLine(i);
         if(bottom_complete)
             DeleteBottomLine(i);
+
+        if(!top_complete && !bottom_complete)
+            continue;
+ 
+        for(int j = 0; j < GRID_SIZE; j+=2)
+            if(AreColorsEqual(grid_triangles[i][j], GRID_TRIANGLE) && AreColorsEqual(grid_triangles[i][j+1], GRID_TRIANGLE))
+                for(int k = i; k > 0; k--) {
+                    grid_triangles[k][j] = grid_triangles[k-1][j];
+                    grid_triangles[k][j+1] = grid_triangles[k-1][j+1];
+                }
+
+        UpdateScore(100);
+
+        i++; //Does it again to check for more completions
     }
-    //If just the top triangles of a line or bottom triangles are completed delete just them
-    //If both then delete the line and move everything down
 }

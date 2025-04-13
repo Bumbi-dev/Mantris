@@ -8,9 +8,7 @@ enum Direction {
     DOWN
 };
 
-void UpdateScore(int s);
-
-void DrawScoreBox();
+void UpdateScore(int score);
 
 void ClearGrid();
 

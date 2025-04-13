@@ -15,13 +15,15 @@ using namespace std;
 using namespace chrono;
 
 bool game_over = false;
-int fall_delay = 300;
 int is_key_down = false;
 
 steady_clock::time_point last_move;
 
 thread t;
-atomic<bool> ready(false);
+
+const int FALL_DELAY = 300;
+atomic<float> speed_multiplier(1.0f);
+atomic<int> score1(0);
 
 Piece* pieces[10] = {new I_Piece(), new O_Piece(), new V_Piece(), new P_Piece(), new T_Piece(), new L_Piece(), new N_Piece()};
 
@@ -32,7 +34,7 @@ void FinishGame()
 
 void SpawnRandomPiece()
 {
-    int random_piece = GetRandomValue(0, 6);
+    int random_piece = GetRandomValue(0, 0);
     
     bool end_game = SpawnPiece(*pieces[random_piece]);
 
@@ -46,12 +48,12 @@ void UpdateMove()
     if (!is_key_down) {
         if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) {
             is_key_down = true;
-            fall_delay /= 2;
+            speed_multiplier = 5.0f;
         }
     } else {
         if (IsKeyReleased(KEY_DOWN) || IsKeyReleased(KEY_S)) {
             is_key_down = false;
-            fall_delay *= 2;
+            speed_multiplier = 1.0f;
         }
     }
 
@@ -74,17 +76,18 @@ void UpdateMove()
             last_move = steady_clock::now();
 }
 
-void UpdateFall() 
+void UpdateFall()
 {
     while(!game_over) {
-
-        while(IsKeyDown(KEY_SPACE))//TODO: remove this
+        while(IsKeyDown(KEY_SPACE))//TODO: remove this after finishing
             this_thread::sleep_for(chrono::milliseconds(1));
 
-        this_thread::sleep_for(chrono::milliseconds(fall_delay));
+        this_thread::sleep_for(chrono::milliseconds(static_cast<int>(FALL_DELAY / speed_multiplier)));
         
-        
-        if(!PieceFalls()) {
+        if(PieceFalls()) {
+            if(IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)) 
+                score1 += 3;
+        } else {
             DeleteCompletedLines();
             SpawnRandomPiece();
         }
@@ -104,6 +107,8 @@ void UpdateGame()
     UpdateMove();
     
     DrawGrid();
+    UpdateScore(score1);
+    score1 = 0;
 
     EndDrawing();
 }
@@ -122,7 +127,7 @@ void InitLayout()
     SpawnRandomPiece();
     DrawGrid();
 
-    DrawScoreBox();
+    UpdateScore(0);
 
     EndDrawing();
 
