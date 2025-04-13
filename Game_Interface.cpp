@@ -14,13 +14,11 @@ int active_piece_x;
 int active_piece_y;
 int active_piece_rotation;
 
-int score = 0;
-
 Color GetTriangle(int y, int x)
 {
     return grid_triangles[y][x];
 }
-Color GetActivePieceTriangle(int i, int j)//TODO implement this where needed
+Color GetActivePieceTriangle(int i, int j)
 {
     return grid_triangles[i + active_piece_y][j + active_piece_x];
 }
@@ -136,10 +134,8 @@ void DrawPiece()
                 grid_triangles[i + active_piece_y][j + active_piece_x] = piece->GetColor();
 }
 
-void UpdateScore(int s)
+void UpdateScore(int score)
 {    
-    score += s;
-
     DrawRectangleRounded(
         (Rectangle){SCORE_BOX_X, SCORE_BOX_Y, SCORE_BOX_WIDTH, SCORE_BOX_HEIGHT},
         0.3f, 8, SCORE_BOX_BACKGROUND);
@@ -193,9 +189,17 @@ bool MovePiece(Direction direction)
     {
         x_offset = -2;
 
-        for(int i = 0; i < PIECE_SIZE; i++)
-            if(active_piece[i][0] && active_piece_x + x_offset < 0)  
+        for(int i = 0; i < PIECE_SIZE; i++) {
+            if(!active_piece[i][0] && !active_piece[i][1])  
+                continue;
+
+            if(active_piece_x + x_offset < 0)
                 return false;
+
+            if(!AreColorsEqual(GetActivePieceTriangle(i,-1), GRID_TRIANGLE)
+                || !AreColorsEqual(GetActivePieceTriangle(i,-2), GRID_TRIANGLE))
+                return false;
+        }
 
         //TODO maybe make conditions less strict so that you can insert easier
         for(int j = 2; j < PIECE_SIZE && x_offset != 0; j+=2) 
@@ -298,9 +302,10 @@ void DeleteBottomLine(int i) {
         grid_triangles[i][j] = GRID_TRIANGLE;
 }
 
-void DeleteCompletedLines() {
+int DeleteCompletedLines() {
     bool top_complete;
     bool bottom_complete;
+    int lines_completed = 0;
 
     for(int i = GRID_SIZE - 1; i >= 0; i--)  {
         top_complete = true;
@@ -312,10 +317,14 @@ void DeleteCompletedLines() {
                 top_complete = false;
         }
 
-        if(top_complete)
+        if(top_complete) {
             DeleteTopLine(i);
-        if(bottom_complete)
+            lines_completed++;
+        }
+        if(bottom_complete) {
             DeleteBottomLine(i);
+            lines_completed++;
+        }
 
         if(!top_complete && !bottom_complete)
             continue;
@@ -327,8 +336,8 @@ void DeleteCompletedLines() {
                     grid_triangles[k][j+1] = grid_triangles[k-1][j+1];
                 }
 
-        UpdateScore(100);
-
         i++; //Does it again to check for more completions
     }
+
+    return lines_completed;
 }

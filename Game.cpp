@@ -23,18 +23,20 @@ thread t;
 
 const int FALL_DELAY = 300;
 atomic<float> speed_multiplier(1.0f);
-atomic<int> score1(0);
+atomic<int> score(0);
 
 Piece* pieces[10] = {new I_Piece(), new O_Piece(), new V_Piece(), new P_Piece(), new T_Piece(), new L_Piece(), new N_Piece()};
 
 void FinishGame()
 {
-    game_over = true;
+    // game_over = true;
+    ClearGrid();
+    score = 0;
 }
 
 void SpawnRandomPiece()
 {
-    int random_piece = GetRandomValue(0, 0);
+    int random_piece = GetRandomValue(0, 6);
     
     bool end_game = SpawnPiece(*pieces[random_piece]);
 
@@ -86,9 +88,9 @@ void UpdateFall()
         
         if(PieceFalls()) {
             if(IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)) 
-                score1 += 3;
+                score += 3;
         } else {
-            DeleteCompletedLines();
+            score += 100 * DeleteCompletedLines();
             SpawnRandomPiece();
         }
     }
@@ -107,8 +109,7 @@ void UpdateGame()
     UpdateMove();
     
     DrawGrid();
-    UpdateScore(score1);
-    score1 = 0;
+    UpdateScore(score);
 
     EndDrawing();
 }
