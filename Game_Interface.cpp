@@ -341,3 +341,13 @@ int DeleteCompletedLines() {
 
     return lines_completed;
 }
+
+void ShowEndGameScreen() {
+    DrawRectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, {0, 0, 0, 147});
+
+    int text_width = MeasureText("GAME OVER", 70);
+    DrawText("GAME OVER", (WINDOW_WIDTH - text_width) / 2, WINDOW_HEIGHT / 2 - 20, 70, WHITE);
+
+    text_width = MeasureText("Press Space to continue", 20);
+    DrawText("Press Space to continue", (WINDOW_WIDTH - text_width) / 2, WINDOW_HEIGHT / 2 + 60, 20, WHITE);
+}

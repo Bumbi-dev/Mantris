@@ -23,3 +23,5 @@ bool MovePiece(Direction direction);
 void RotatePiece();
 
 int DeleteCompletedLines();
+
+void ShowEndGameScreen();

@@ -27,13 +27,6 @@ atomic<int> score(0);
 
 Piece* pieces[10] = {new I_Piece(), new O_Piece(), new V_Piece(), new P_Piece(), new T_Piece(), new L_Piece(), new N_Piece()};
 
-void FinishGame()
-{
-    // game_over = true;
-    ClearGrid();
-    score = 0;
-}
-
 void SpawnRandomPiece()
 {
     int random_piece = GetRandomValue(0, 6);
@@ -41,11 +34,14 @@ void SpawnRandomPiece()
     bool end_game = SpawnPiece(*pieces[random_piece]);
 
     if(end_game)
-        FinishGame();
+        game_over = true;
 }
 
 void UpdateMove()
 {
+    if(game_over)
+        return;
+
     //SPEED UP FALLING
     if (!is_key_down) {
         if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) {
@@ -96,30 +92,8 @@ void UpdateFall()
     }
 }
 
-void UpdateGame()
-{
-    BeginDrawing();
-
-    if(game_over) {
-        DrawGrid();
-        EndDrawing();
-        return;
-    }
-
-    UpdateMove();
-    
-    DrawGrid();
-    UpdateScore(score);
-
-    EndDrawing();
-}
-
 void InitLayout()
 {
-    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Manu Tetris");
-    SetTargetFPS(60);
-    SetWindowIcon(LoadImage("res/icon.png"));
-
     BeginDrawing();
 
     ClearBackground(BACKGROUND);
@@ -133,12 +107,55 @@ void InitLayout()
     EndDrawing();
 
     last_move = steady_clock::now();
+    game_over = false;
 
     t = thread(UpdateFall);
 }
 
+void UpdateGame()
+{
+    BeginDrawing();
+    ClearBackground(BACKGROUND);
+
+    UpdateMove();
+    DrawGrid();
+
+    UpdateScore(score);
+
+    if(game_over) {
+        ShowEndGameScreen();
+
+        if(IsKeyPressed(KEY_SPACE)) 
+        {
+            ClearGrid();
+            game_over = false;
+            score = 0;
+            
+            if(t.joinable())
+                t.join();
+
+            speed_multiplier = 1;
+            is_key_down = false;
+
+            t = thread(UpdateFall);
+            DrawGrid();
+        }
+    }
+
+    EndDrawing();
+}
+
+void InitWindow() 
+{
+    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Manu Tetris");
+    SetTargetFPS(60);
+    SetWindowIcon(LoadImage("res/icon.png"));
+}
+
 void StartGame()
 {
+    InitWindow();
+
     InitLayout();
     
     while (!WindowShouldClose())
