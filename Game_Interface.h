@@ -1,18 +1,13 @@
 #pragma once
 #include "raylib.h"
 #include "Piece.h"
+#include "Draw_Handler.h"
 
 enum Direction {
     LEFT,
     RIGHT,
     DOWN
 };
-
-void UpdateScore(int score);
-
-void ClearGrid();
-
-void DrawGrid();
 
 bool SpawnPiece(Piece &piece);
 
@@ -23,5 +18,3 @@ bool MovePiece(Direction direction);
 void RotatePiece();
 
 int DeleteCompletedLines();
-
-void ShowEndGameScreen();

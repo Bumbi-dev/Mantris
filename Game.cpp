@@ -1,29 +1,25 @@
 #include <atomic>
 #include <thread>
 #include <chrono>
-#include "Utils.h"
-#include "Game_Interface.h"
-#include "I_Piece.h"
-#include "L_Piece.h"
-#include "O_Piece.h"
-#include "P_Piece.h"
-#include "T_Piece.h"
-#include "V_Piece.h"
-#include "N_Piece.h"
+
+#include "Game.h"
 
 using namespace std;
 using namespace chrono;
 
-bool game_over = false;
-int is_key_down = false;
+const int FALL_DELAY = 300;
 
-steady_clock::time_point last_move;
+int is_key_down = false;
+bool game_over = false;
 
 thread t;
 
-const int FALL_DELAY = 300;
+steady_clock::time_point last_move;
+steady_clock::time_point reached_bottom_time;
+
 atomic<float> speed_multiplier(1.0f);
 atomic<int> score(0);
+atomic<int> ReadyToPlace(false);
 
 Piece* pieces[10] = {new I_Piece(), new O_Piece(), new V_Piece(), new P_Piece(), new T_Piece(), new L_Piece(), new N_Piece()};
 
@@ -35,6 +31,35 @@ void SpawnRandomPiece()
 
     if(end_game)
         game_over = true;
+}
+
+void UpdateFall()
+{
+    while(!game_over) {
+        while(IsKeyDown(KEY_SPACE))//TODO: remove this after finishing
+            this_thread::sleep_for(chrono::milliseconds(1));
+
+        this_thread::sleep_for(chrono::milliseconds(static_cast<int>(FALL_DELAY / speed_multiplier)));
+        
+        if(PieceFalls()) {
+            ReadyToPlace = false;
+            if(IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)) 
+                score += 3;
+
+            continue;
+        }
+
+        if(!ReadyToPlace)
+            reached_bottom_time = steady_clock::now();
+
+        ReadyToPlace = true;
+
+        if (steady_clock::now() - reached_bottom_time <= chrono::milliseconds(static_cast<int>(FALL_DELAY / speed_multiplier * 2)))  
+            continue;
+
+        score += 100 * DeleteCompletedLines();
+        SpawnRandomPiece();
+    }
 }
 
 void UpdateMove()
@@ -57,7 +82,10 @@ void UpdateMove()
 
     //ROTATE PIECE
     if(IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W))
-        RotatePiece();
+    {
+        RotatePiece();//TODO if cant rotate to next pos try every pose
+        ReadyToPlace = false;
+    }
 
     //MOVE PIECE
     int time_since_last_move = duration_cast<milliseconds>(steady_clock::now() - last_move).count();
@@ -65,51 +93,19 @@ void UpdateMove()
     if(time_since_last_move < 100)
         return;
 
-    if(IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
+    if(IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) 
         if(MovePiece(LEFT))
+        {
             last_move = steady_clock::now();
-
-    if(IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D))
-        if(MovePiece(RIGHT))
-            last_move = steady_clock::now();
-}
-
-void UpdateFall()
-{
-    while(!game_over) {
-        while(IsKeyDown(KEY_SPACE))//TODO: remove this after finishing
-            this_thread::sleep_for(chrono::milliseconds(1));
-
-        this_thread::sleep_for(chrono::milliseconds(static_cast<int>(FALL_DELAY / speed_multiplier)));
-        
-        if(PieceFalls()) {
-            if(IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)) 
-                score += 3;
-        } else {
-            score += 100 * DeleteCompletedLines();
-            SpawnRandomPiece();
+            ReadyToPlace = false;
         }
-    }
-}
 
-void InitLayout()
-{
-    BeginDrawing();
-
-    ClearBackground(BACKGROUND);
-    ClearGrid();
-
-    SpawnRandomPiece();
-    DrawGrid();
-
-    UpdateScore(0);
-
-    EndDrawing();
-
-    last_move = steady_clock::now();
-    game_over = false;
-
-    t = thread(UpdateFall);
+    if(IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) 
+        if(MovePiece(RIGHT))
+        {
+            last_move = steady_clock::now();
+            ReadyToPlace = false;
+        }
 }
 
 void UpdateGame()
@@ -120,10 +116,10 @@ void UpdateGame()
     UpdateMove();
     DrawGrid();
 
-    UpdateScore(score);
+    DrawScore(score);
 
     if(game_over) {
-        ShowEndGameScreen();
+        DrawEndGameScreen();
 
         if(IsKeyPressed(KEY_SPACE)) 
         {
@@ -152,10 +148,29 @@ void InitWindow()
     SetWindowIcon(LoadImage("res/icon.png"));
 }
 
+void InitLayout()
+{
+    BeginDrawing();
+
+    ClearBackground(BACKGROUND);
+    ClearGrid();
+
+    SpawnRandomPiece();
+    DrawGrid();
+
+    DrawScore(0);
+
+    EndDrawing();
+
+    last_move = steady_clock::now();
+    game_over = false;
+
+    t = thread(UpdateFall);
+}
+
 void StartGame()
 {
     InitWindow();
-
     InitLayout();
     
     while (!WindowShouldClose())

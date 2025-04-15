@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Colors.h"
 #include <raylib.h>
 #include <iostream>
+#include "Colors.h"
 
 constexpr int WINDOW_WIDTH = 800;
 constexpr int WINDOW_HEIGHT = 1000;
