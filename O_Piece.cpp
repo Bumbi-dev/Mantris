@@ -10,11 +10,17 @@ void O_Piece::GetPiece(bool (&triangles)[PIECE_SIZE/2][PIECE_SIZE], int pos) con
 {
     ClearPiece(triangles);
 
-    if(pos % 2 == 0) {
+    if(pos % 3 == 0) {
         triangles[0][4] = true;
         triangles[0][5] = true;
-    } else {
+    } 
+    if(pos % 3 == 1) {
         triangles[0][4] = true;
         triangles[0][6] = true;
+    }
+    
+    if(pos % 3 == 2) {
+        triangles[0][5] = true;
+        triangles[0][7] = true;
     }
 }

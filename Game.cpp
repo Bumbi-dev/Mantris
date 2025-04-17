@@ -1,6 +1,7 @@
 #include <atomic>
 #include <thread>
 #include <chrono>
+#include <map>
 
 #include "Game.h"
 
@@ -21,13 +22,35 @@ atomic<float> speed_multiplier(1.0f);
 atomic<int> score(0);
 atomic<int> ReadyToPlace(false);
 
-Piece* pieces[10] = {new I_Piece(), new O_Piece(), new V_Piece(), new P_Piece(), new T_Piece(), new L_Piece(), new N_Piece()};
+Piece *GetNextPiece() 
+{
+    int percent = GetRandomValue(1, 100);
+
+    if(percent <= 5)
+        return new L_Piece();
+    if(percent <= 15)
+        return new P_Piece();
+    if(percent <= 35)
+        return new N_Piece();
+    if(percent <= 50)
+        return new T_Piece();
+    if(percent <= 65)
+        return new I_Piece();
+    if(percent <= 80)
+        return new V_Piece();
+
+    return new O_Piece();
+}
 
 void SpawnRandomPiece()
 {
-    int random_piece = GetRandomValue(0, 6);
-    
-    bool end_game = SpawnPiece(*pieces[random_piece]);
+    Piece *NextPiece = GetNextPiece();
+
+    while(typeid(*NextPiece) == typeid(*piece)) {
+        NextPiece = GetNextPiece();
+    }
+
+    bool end_game = SpawnPiece(*NextPiece);
 
     if(end_game)
         game_over = true;
@@ -54,7 +77,7 @@ void UpdateFall()
 
         ReadyToPlace = true;
 
-        if (steady_clock::now() - reached_bottom_time <= chrono::milliseconds(static_cast<int>(FALL_DELAY / speed_multiplier * 2)))  
+        if (steady_clock::now() - reached_bottom_time <= chrono::milliseconds(static_cast<int>(FALL_DELAY * 2)))  
             continue;
 
         score += 100 * DeleteCompletedLines();
@@ -141,13 +164,6 @@ void UpdateGame()
     EndDrawing();
 }
 
-void InitWindow() 
-{
-    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Manu Tetris");
-    SetTargetFPS(60);
-    SetWindowIcon(LoadImage("res/icon.png"));
-}
-
 void InitLayout()
 {
     BeginDrawing();
@@ -170,11 +186,8 @@ void InitLayout()
 
 void StartGame()
 {
-    InitWindow();
     InitLayout();
     
     while (!WindowShouldClose())
         UpdateGame();
-
-    CloseWindow();
 }

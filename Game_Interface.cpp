@@ -1,10 +1,11 @@
 #include "Utils.h"
 
+#include "O_Piece.h"
 #include "Game_Interface.h"
 
 using namespace std;
 
-Piece *piece;
+Piece *piece = new O_Piece();
 
 //Return if piece spawned
 bool SpawnPiece(Piece &p)
@@ -77,16 +78,23 @@ bool MovePiece(Direction direction)
     {
         x_offset = -2;
 
-        for(int i = 0; i < PIECE_SIZE; i++) {
+        //If the piece reaches the left limit
+        for(int i = 0; i < PIECE_SIZE / 2; i++) {
             if(!active_piece[i][0] && !active_piece[i][1])  
                 continue;
+
+            for(int s = 0; s < PIECE_SIZE; s++, cout << endl)
+                for(int z = 0; z < PIECE_SIZE; z++)
+                    cout << active_piece[s][z] << " ";
+
+            cout << endl;
 
             if(active_piece_x + x_offset < 0)
                 return false;
 
             if(!AreColorsEqual(GetActivePieceTriangle(i,-1), GRID_TRIANGLE)
                 || !AreColorsEqual(GetActivePieceTriangle(i,-2), GRID_TRIANGLE))
-                return false;
+                    return false;
         }
 
         //TODO maybe make conditions less strict so that you can insert easier
@@ -151,7 +159,6 @@ bool MovePiece(Direction direction)
 void RotatePiece()
 {
     active_piece_rotation++;
-    active_piece_rotation %= 4;
 
     DeletePieceGrid();
     piece->GetPiece(active_piece, active_piece_rotation);

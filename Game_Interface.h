@@ -9,6 +9,8 @@ enum Direction {
     DOWN
 };
 
+extern Piece *piece;
+
 bool SpawnPiece(Piece &piece);
 
 bool PieceFalls();
