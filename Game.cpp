@@ -136,7 +136,8 @@ void UpdateGame()
     BeginDrawing();
     ClearBackground(BACKGROUND);
 
-    UpdateMove();
+    // UpdateMove();
+
     DrawGrid();
 
     DrawScore(score);
@@ -181,7 +182,7 @@ void InitLayout()
     last_move = steady_clock::now();
     game_over = false;
 
-    t = thread(UpdateFall);
+    // t = thread(UpdateFall);
 }
 
 void StartGame()

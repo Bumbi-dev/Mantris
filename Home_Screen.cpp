@@ -14,7 +14,7 @@ Texture2D texture;
 void InitWindow() 
 {
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Manu Tetris");
-    SetTargetFPS(60);
+    SetTargetFPS(200);
     SetWindowIcon(LoadImage("res/icon.png"));
 }
 

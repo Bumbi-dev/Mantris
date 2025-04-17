@@ -4,10 +4,10 @@
 #include <iostream>
 #include "Colors.h"
 
-constexpr int WINDOW_WIDTH = 800;
+constexpr int WINDOW_WIDTH = 1800;
 constexpr int WINDOW_HEIGHT = 1000;
 
-constexpr int GRID_SIZE = 18;
+constexpr int GRID_SIZE = 58;
 constexpr int GRID_X = 10;
 constexpr int GRID_Y = 10;
 constexpr int TRIANGLE_SIDE = 50;
@@ -23,5 +23,6 @@ constexpr int SCORE_BOX_HEIGHT = 180;
 
 constexpr int PIECE_SIZE = 10;
 
+Color GetRandomColor();
 Color GetDarkerColor(Color c);
 bool AreColorsEqual(Color color1, Color color2);

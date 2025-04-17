@@ -58,7 +58,6 @@ void DrawRightTriangle(float x, float y, Color color)
     Vector2 v3 = {x + TRIANGLE_SIDE, y};
 
     Color border_color = GetDarkerColor(color);
-
     DrawTriangle(v1, v2, v3, border_color);
 
     v1 = {x + 8 , y + 3};
@@ -74,6 +73,30 @@ void DrawGridTriangle(int i, int j)
     int y = GRID_Y + 2 * TRIANGLE_PADDING + i * (2 * TRIANGLE_PADDING + TRIANGLE_SIDE);
     DrawLeftTriangle(x, y, grid_triangles[i][j*2]);    
     
+    if(IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        if(GetMouseY() > y + GetMouseX() - x && GetMouseY() < y + TRIANGLE_SIDE)
+            if(GetMouseX() > x && GetMouseX() < x + GetMouseY() - y) 
+                grid_triangles[i][j*2] = GetRandomColor();
+    
+        if(GetMouseY() > y && GetMouseY() < y + GetMouseX() - x)
+            if(GetMouseX() > x + GetMouseY() - y && GetMouseX() < x + TRIANGLE_SIDE)
+                grid_triangles[i][j*2+1] = GetRandomColor();
+    }
+    
+
+    if(IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
+        if(GetMouseY() > y + GetMouseX() - x && GetMouseY() < y + TRIANGLE_SIDE)
+            if(GetMouseX() > x && GetMouseX() < x + GetMouseY() - y) 
+                grid_triangles[i][j*2] = GRID_TRIANGLE;
+    
+        if(GetMouseY() > y && GetMouseY() < y + GetMouseX() - x)
+            if(GetMouseX() > x + GetMouseY() - y && GetMouseX() < x + TRIANGLE_SIDE)
+                grid_triangles[i][j*2+1] = GRID_TRIANGLE;
+    }
+
+    if(IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))
+        ClearGrid();
+
     x += TRIANGLE_PADDING;
     y -= TRIANGLE_PADDING;
     DrawRightTriangle(x, y, grid_triangles[i][j*2 + 1]);

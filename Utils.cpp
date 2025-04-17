@@ -1,5 +1,28 @@
 #include "Utils.h"
 
+Color GetRandomColor() {
+    int nr = GetRandomValue(0, 6);
+    switch(nr) 
+    {
+        case 0:
+            return I_COLOR;
+        case 1:
+            return N_COLOR;
+        case 2:
+            return P_COLOR;
+        case 3:
+            return L_COLOR;
+        case 4:
+            return T_COLOR;
+        case 5:
+            return O_COLOR;
+        case 6:
+            return V_COLOR;
+    }
+
+    return V_COLOR;
+}
+
 Color GetDarkerColor(Color c)
 {
     return {
