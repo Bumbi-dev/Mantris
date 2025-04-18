@@ -187,6 +187,8 @@ void InitLayout()
 
 void StartGame()
 {
+    SetWindowSize(WINDOW_WIDTH * 2, WINDOW_HEIGHT);
+
     InitLayout();
     
     while (!WindowShouldClose())

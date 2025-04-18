@@ -4,7 +4,7 @@
 #include <iostream>
 #include "Colors.h"
 
-constexpr int WINDOW_WIDTH = 1800;
+constexpr int WINDOW_WIDTH = 800;
 constexpr int WINDOW_HEIGHT = 1000;
 
 constexpr int GRID_SIZE = 58;

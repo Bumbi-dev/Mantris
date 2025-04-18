@@ -1,13 +1,12 @@
-#include <raylib.h>
 #include "Utils.h"
 
 #include "Home_Screen.h"
 
-int const BUTTON_WIDTH = 200;
-int const BUTTON_HEIGHT = 100;
-int const BUTTON_X = (WINDOW_WIDTH - BUTTON_WIDTH) / 2;
-int const BUTTON_Y = 500;
-float scale = 2.0f; 
+int const BUTTON_WIDTH = 362;
+int const BUTTON_HEIGHT = 115;
+int const BUTTON_X = 220;
+int const BUTTON_Y = 645;
+float scale = 0.5f; 
 
 Texture2D texture;
 
@@ -33,22 +32,19 @@ bool IsButtonClicked()
 }
 
 void DrawLayout() 
-{
-    Vector2 position = {120, 100};
+{ 
+    ClearBackground(WHITE);
 
-    DrawTextureEx(texture, position, 0.0f, scale, WHITE);
 
-    int text_width = MeasureText("ATESTAT INFO", 40);
-    DrawText("ATESTAT INFO", (WINDOW_WIDTH - text_width) / 2, 30, 40, WHITE);
-
-    DrawRectangle(BUTTON_X, BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT, {255, 255, 255, 55});
+    DrawTextureEx(texture, {0,0}, 0.0f, scale, WHITE);
 }
 
 void ShowHomeScreen()
 {
     InitWindow();
 
-    texture = LoadTexture("res/image.png");
+    texture = LoadTexture("res/Home_Screen.png"); //TODO load this sooner maybe utils method for loading
+
 
     while(!IsButtonClicked() && !WindowShouldClose())
     {
