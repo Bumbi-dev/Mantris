@@ -5,7 +5,7 @@
 
 using namespace std;
 
-Piece *piece = new O_Piece();
+Piece *piece = new O_Piece(); 
 
 //Return if piece spawned
 bool SpawnPiece(Piece &p)

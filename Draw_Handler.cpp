@@ -3,7 +3,7 @@
 Color grid_triangles[GRID_SIZE][GRID_SIZE];
 bool active_piece[PIECE_SIZE/2][PIECE_SIZE];
 
-int active_piece_x;
+int active_piece_x; 
 int active_piece_y;
 int active_piece_rotation;
 

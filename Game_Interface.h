@@ -3,7 +3,7 @@
 #include "Piece.h"
 #include "Draw_Handler.h"
 
-enum Direction {
+enum Direction { 
     LEFT,
     RIGHT,
     DOWN

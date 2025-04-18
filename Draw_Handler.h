@@ -5,7 +5,7 @@
 extern Color grid_triangles[GRID_SIZE][GRID_SIZE];
 extern bool active_piece[PIECE_SIZE/2][PIECE_SIZE];
 
-extern int active_piece_x;
+extern int active_piece_x; 
 extern int active_piece_y;
 extern int active_piece_rotation;
 

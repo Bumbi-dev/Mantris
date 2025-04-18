@@ -7,7 +7,7 @@ int main ()
 
     StartGame();
     
-    CloseWindow();
+    CloseWindow(); 
     
     return 0;
 }

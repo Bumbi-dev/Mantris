@@ -83,7 +83,7 @@ void UpdateFall()
         score += 100 * DeleteCompletedLines();
         SpawnRandomPiece();
     }
-}
+} 
 
 void UpdateMove()
 {
