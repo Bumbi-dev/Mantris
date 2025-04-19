@@ -23,6 +23,7 @@ constexpr int SCORE_BOX_HEIGHT = 180;
 
 constexpr int PIECE_SIZE = 10;
 
+extern Texture2D SECRET_HOME_SCREEN_BACKROUND;
 extern Texture2D HOME_SCREEN_BACKROUND;
 extern Image ICON;
 
