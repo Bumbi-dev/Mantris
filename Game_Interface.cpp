@@ -1,11 +1,10 @@
 #include "Utils.h"
 
-#include "O_Piece.h"
 #include "Game_Interface.h"
-
+ 
 using namespace std;
 
-Piece *piece = new O_Piece(); 
+Piece *piece;
 
 //Return if piece spawned
 bool SpawnPiece(Piece &p)
@@ -82,12 +81,6 @@ bool MovePiece(Direction direction)
         for(int i = 0; i < PIECE_SIZE / 2; i++) {
             if(!active_piece[i][0] && !active_piece[i][1])  
                 continue;
-
-            for(int s = 0; s < PIECE_SIZE; s++, cout << endl)
-                for(int z = 0; z < PIECE_SIZE; z++)
-                    cout << active_piece[s][z] << " ";
-
-            cout << endl;
 
             if(active_piece_x + x_offset < 0)
                 return false;

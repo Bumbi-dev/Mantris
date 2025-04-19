@@ -68,6 +68,7 @@
 		"thread": "cpp",
 		"chrono": "cpp",
 		"iomanip": "cpp",
-		"sstream": "cpp"
+		"sstream": "cpp",
+		"map": "cpp"
 	}
 }

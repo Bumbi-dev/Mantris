@@ -23,5 +23,10 @@ constexpr int SCORE_BOX_HEIGHT = 180;
 
 constexpr int PIECE_SIZE = 10;
 
+extern Texture2D HOME_SCREEN_BACKROUND;
+extern Image ICON;
+
+void LoadAssets();
+
 Color GetDarkerColor(Color c);
 bool AreColorsEqual(Color color1, Color color2);

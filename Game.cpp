@@ -1,7 +1,7 @@
 #include <atomic>
 #include <thread>
 #include <chrono>
-#include <map>
+// #include <map>
 
 #include "Game.h"
 
@@ -46,9 +46,8 @@ void SpawnRandomPiece()
 {
     Piece *NextPiece = GetNextPiece();
 
-    while(typeid(*NextPiece) == typeid(*piece)) {
+    while(typeid(*NextPiece) == typeid(*piece))
         NextPiece = GetNextPiece();
-    }
 
     bool end_game = SpawnPiece(*NextPiece);
 
@@ -171,7 +170,8 @@ void InitLayout()
     ClearBackground(BACKGROUND);
     ClearGrid();
 
-    SpawnRandomPiece();
+    SpawnPiece(*GetNextPiece());
+
     DrawGrid();
 
     DrawScore(0);
