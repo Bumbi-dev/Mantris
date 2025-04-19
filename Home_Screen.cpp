@@ -4,7 +4,7 @@
 
 #include "Home_Screen.h"
 
-Rectangle secretButton = {52, 184, 35, 35};
+Rectangle secretButton = {228, 184, 35, 35};
 Rectangle playButton = {220, 645, 362, 115};
 
 float scale = 0.5f; 
