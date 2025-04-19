@@ -57,9 +57,6 @@ void SpawnRandomPiece()
 void UpdateFall()
 {
     while(!game_over) {
-        while(IsKeyDown(KEY_SPACE))//TODO: remove this after finishing
-            this_thread::sleep_for(chrono::milliseconds(1));
-
         this_thread::sleep_for(chrono::milliseconds(static_cast<int>(FALL_DELAY / speed_multiplier)));
         
         if(PieceFalls()) {
@@ -104,7 +101,7 @@ void UpdateMove()
     //ROTATE PIECE
     if(IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W))
     {
-        RotatePiece();//TODO if cant rotate to next pos try every pose
+        RotatePiece();
         ReadyToPlace = false;
     }
 

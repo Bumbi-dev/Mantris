@@ -42,7 +42,6 @@ bool PieceFalls()
             if(!(active_piece[i][j] || active_piece[i][j+1]) || (active_piece[i+1][j] || active_piece[i+1][j+1]))
                 continue;
 
-            //TODO maybe remove this to make game easier
             //Check if it reached bottom or is blocked
             if(!AreColorsEqual(GetActivePieceTriangle(i + 1, j+1), GRID_TRIANGLE)
                 || i + active_piece_y + 1 >= GRID_SIZE)
@@ -90,7 +89,6 @@ bool MovePiece(Direction direction)
                     return false;
         }
 
-        //TODO maybe make conditions less strict so that you can insert easier
         for(int j = 2; j < PIECE_SIZE && x_offset != 0; j+=2) 
             for(int i = 0; i < PIECE_SIZE/2 && x_offset != 0; i++) 
             {

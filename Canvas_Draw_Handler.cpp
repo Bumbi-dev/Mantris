@@ -13,6 +13,12 @@ void ClearGridCanvas()
         for(int j = 0; j < CANVAS_GRID_ROWS; j++)
             canvas_triangles[i][j] = GRID_TRIANGLE;
 }
+void FillGridCanvas()
+{
+    for(int i = 0; i < GRID_SIZE; i++)
+        for(int j = 0; j < CANVAS_GRID_ROWS; j++)
+            canvas_triangles[i][j] = GetRandomColor();
+}
 
 void DrawGridTriangleCanvas(int i, int j)
 {
@@ -27,8 +33,6 @@ void DrawGridTriangleCanvas(int i, int j)
 
 void DrawGridCanvas()
 {
-    std::cout << CANVAS_GRID_WIDTH << std::endl << CANVAS_GRID_X << std::endl;
-
     DrawRectangle(CANVAS_GRID_X, GRID_Y, CANVAS_GRID_WIDTH, BACKGROUND_HEIGHT, GRID_BACKGROUND);
 
     for(int i = 0; i < GRID_SIZE; i++)

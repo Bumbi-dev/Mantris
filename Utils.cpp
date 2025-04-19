@@ -1,6 +1,6 @@
 #include "Utils.h" 
 
-Texture2D SECRET_HOME_SCREEN_BACKROUND;
+Texture2D SECRET_HOME_SCREEN;
 Texture2D HOME_SCREEN_BACKROUND;
 Image ICON;
 
@@ -8,7 +8,7 @@ void LoadAssets()
 {
     ICON = LoadImage("res/icon.png");
     HOME_SCREEN_BACKROUND = LoadTexture("res/Home_Screen.png");
-    SECRET_HOME_SCREEN_BACKROUND = LoadTexture("res/Home_Screen.png");//TODO add this
+    SECRET_HOME_SCREEN = LoadTexture("res/Secret.png");
 }
 
 Color GetRandomColor() {

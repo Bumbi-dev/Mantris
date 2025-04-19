@@ -7,15 +7,19 @@ using namespace std;
 int i, j;
 bool first_time = true;
 
+//LEFT_CLICK - DRAW
+//RIGHT_CLICK - DELETE
+//MIDDLE_CLICK - CLEAR
+//MIDDLE_CLICK + LEFT_CLICK - FILL
 void UpdateTrianglePosition()
 {
-    int x = GetMouseX();
+    int x = GetMouseX() - TRIANGLE_PADDING;
     int y = GetMouseY();
 
     i = (y - GRID_Y - 2 * TRIANGLE_PADDING) / (2 * TRIANGLE_PADDING + TRIANGLE_SIDE);
 
-    int squareIndex = (x - GRID_X - TRIANGLE_PADDING) / (2 * TRIANGLE_PADDING + TRIANGLE_SIDE);
-    int baseX = GRID_X + TRIANGLE_PADDING + squareIndex * (2 * TRIANGLE_PADDING + TRIANGLE_SIDE);
+    int squareIndex = (x - CANVAS_GRID_X - TRIANGLE_PADDING) / (2 * TRIANGLE_PADDING + TRIANGLE_SIDE);
+    int baseX = CANVAS_GRID_X + TRIANGLE_PADDING + squareIndex * (2 * TRIANGLE_PADDING + TRIANGLE_SIDE);
     int baseY = GRID_Y + 2 * TRIANGLE_PADDING + i * (2 * TRIANGLE_PADDING + TRIANGLE_SIDE);
 
     bool isRightTriangle = (y < baseY + x - baseX);
@@ -27,7 +31,7 @@ void UpdateGridTriangle()
 {
     UpdateTrianglePosition();
 
-    if(i < 0 || j < 0 || j > CANVAS_GRID_ROWS - 1 || i > GRID_SIZE - 1)
+    if(GetMouseX() < CANVAS_GRID_X || GetMouseY() < GRID_Y || j > CANVAS_GRID_ROWS - 1 || i > GRID_SIZE - 1)
         return;
 
     if(first_time)
@@ -45,7 +49,12 @@ void UpdateGrid()
     UpdateGridTriangle();
 
     if(IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))
-        ClearGridCanvas();
+    {
+        if(IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+            FillGridCanvas();
+        else
+            ClearGridCanvas();
+    }
 }
 
 void UpdateCanvas()

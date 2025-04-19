@@ -4,10 +4,15 @@
 
 #include "Home_Screen.h"
 
+Rectangle secretButton = {52, 184, 35, 35};
 Rectangle playButton = {220, 645, 362, 115};
+
 float scale = 0.5f; 
+
+int timesClicked = 0;
 bool foundSecret = false;
 
+//CLICK THE HOLE IN THE "A" TO FIND SECRET
 void InitWindow() 
 {
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Atestat");
@@ -20,10 +25,6 @@ void InitWindow()
 
 bool IsRectangleClicked(Rectangle rectangle)
 {
-    BeginDrawing();//TODO add this in the loop after done testing
-
-    DrawRectangleRec(rectangle, {155,55,55,205});
-
     if(!IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
         return false;
 
@@ -40,17 +41,18 @@ void DrawLayout()
 { 
     ClearBackground(WHITE);
 
-    if(foundSecret)
-        DrawTextureEx(SECRET_HOME_SCREEN_BACKROUND, {0,0}, 0.0f, scale, WHITE);
-    else
-        DrawTextureEx(HOME_SCREEN_BACKROUND, {0,0}, 0.0f, scale, WHITE);
+    DrawTextureEx(HOME_SCREEN_BACKROUND, {0,0}, 0.0f, scale, WHITE);
 
+    if(foundSecret)
+        DrawTextureEx(SECRET_HOME_SCREEN, {221, 645}, 0.0f, 0.4f, WHITE);
 }
 
 void CheckForSecret()
 {
-    //TODO add better conditions
-    if(IsRectangleClicked((Rectangle) {0,0, 50 ,50}))
+    if(IsRectangleClicked(secretButton))
+        timesClicked++;
+
+    if(timesClicked >= 5)
         foundSecret = true;
 }
 
@@ -60,13 +62,12 @@ void OpenHomeScreen()
       
     while(!IsRectangleClicked(playButton) && !WindowShouldClose())
     {        
+        BeginDrawing();
+
         DrawLayout();
 
         CheckForSecret();
-
-        if(foundSecret)
-            std::cout << "sa gasit";
-
+        
         EndDrawing();
     }
 
