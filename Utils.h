@@ -29,5 +29,6 @@ extern Image ICON;
 
 void LoadAssets();
 
+Color GetRandomColor();
 Color GetDarkerColor(Color c);
 bool AreColorsEqual(Color color1, Color color2);

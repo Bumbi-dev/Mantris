@@ -4,11 +4,7 @@
 
 #include "Home_Screen.h"
 
-int const BUTTON_WIDTH = 362;
-int const BUTTON_HEIGHT = 115;
-int const BUTTON_X = 220;
-int const BUTTON_Y = 645;
-Rectangle playButton = {BUTTON_X, BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT};
+Rectangle playButton = {220, 645, 362, 115};
 float scale = 0.5f; 
 bool foundSecret = false;
 
@@ -24,6 +20,10 @@ void InitWindow()
 
 bool IsRectangleClicked(Rectangle rectangle)
 {
+    BeginDrawing();//TODO add this in the loop after done testing
+
+    DrawRectangleRec(rectangle, {155,55,55,205});
+
     if(!IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
         return false;
 
@@ -57,14 +57,15 @@ void CheckForSecret()
 void OpenHomeScreen()
 {
     InitWindow();
-
+      
     while(!IsRectangleClicked(playButton) && !WindowShouldClose())
-    {
-        BeginDrawing();
-        
+    {        
         DrawLayout();
 
         CheckForSecret();
+
+        if(foundSecret)
+            std::cout << "sa gasit";
 
         EndDrawing();
     }

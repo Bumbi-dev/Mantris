@@ -15,6 +15,10 @@ Color GetActivePieceTriangle(int i, int j);
 
 void ClearGrid();
 
+void DrawLeftTriangle(float x, float y, Color color);
+
+void DrawRightTriangle(float x, float y, Color color);
+
 void DrawGrid();
 
 void DrawScore(int score);
